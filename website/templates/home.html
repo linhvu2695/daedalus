@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{%block content%}
+<br/>
+<h1>Welcome {{user.first_name}} {{user.last_name}}!</h1>
+<br/>
+<form action="/upload" enctype="multipart/form-data" method="POST">
+    <input type="file" name="content" />
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+{%endblock%}

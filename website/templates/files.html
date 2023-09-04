@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Files{% endblock %}
+
+{%block content%}
+<br/>
+<h1>Filesystem Explorer</h1>
+<div id="filesystem">
+    {{filesystem_html | safe}}
+</div>
+{%endblock%}

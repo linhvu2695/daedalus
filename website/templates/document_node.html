@@ -1,0 +1,10 @@
+<ul class="document-tree">
+    <li class="open-popup document-node" document-id="{{node.document.id}}" document-title="{{node.document.title}}">{{node.document.title}}</li>
+
+    {%for child in node.children%}
+    <li>
+        {{child.render_node() | safe}}
+    </li>
+    {%endfor%}
+</ul>
+

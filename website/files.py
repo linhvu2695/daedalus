@@ -9,7 +9,7 @@ files = Blueprint("files", __name__)
 @files.route("/files")
 @login_required
 def files_explore():
-    return render_template("files.html", user=current_user, browser_tree=get_document_tree(AppConst.DEFAULT_STORAGE_ID))
+    return render_template("files.html", user=current_user, browser_tree=get_rendered_document_tree(AppConst.DEFAULT_STORAGE_ID))
 
 @files.route("/files/<int:mother_id>", methods=["POST"])
 def create_subfolder(mother_id):
@@ -22,9 +22,15 @@ def create_subfolder(mother_id):
 
     return redirect(url_for("files.files_explore"))
 
-def get_document_tree(root_id: int) -> str:
+def get_rendered_document_tree(root_id: int) -> str:
     """
-    Get the rendered HTML of the full filesystem tree
+    Get the rendered HTML of the full document tree
+    """
+    return get_document_tree(root_id).render_tree()
+
+def get_document_tree(root_id: int) -> DocumentTree:
+    """
+    Get a document tree 
     """
     # Get default storage
     root_document = Document.query.filter_by(
@@ -36,9 +42,12 @@ def get_document_tree(root_id: int) -> str:
 
     children = Document.query.filter_by(mother=root_id).all()
     for child in children:
-        root_node.add_child(DocumentNode(child))
+        child_node = get_document_tree(child.id).root
+        root_node.add_child(child_node)
+
+    # TODO: add chidren recursively
 
     doc_tree = DocumentTree()
     doc_tree.add_node(root_node)
 
-    return doc_tree.render_tree()
+    return doc_tree

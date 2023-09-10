@@ -2,7 +2,7 @@
 {% block title %}Files{% endblock %}
 
 {%block content%}
-<br/>
+<br />
 <h1>Filesystem Explorer</h1>
 <div id="browser-tree">
     {{browser_tree | safe}}
@@ -20,7 +20,23 @@
     </form>
 </div> 
 
+<!-- Rightclick menu -->
+<div class="rightclick-wrapper">
+    <div class="rightclick-content">
+        <ul class="rightclick-menu">
+            <li class="rightclick-item open-popup">
+                <i class="fa fa-plus"></i>
+                <span>Create new subfolder</span>
+            </li>
+            <li class="rightclick-item">
+                <i class="fa fa-minus"></i><span>Delete folder</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div class="blur-bg hidden-blur"></div>
 
 <script src="static/popup.js"></script>
+<script src="static/rightclick-menu.js"></script>
 {%endblock%}

@@ -1,9 +1,3 @@
-#filesystem {
-  margin: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
 /* Popup */
 .popup-content {
   background: #ccc;
@@ -88,4 +82,46 @@
   border-radius: 5px;
   cursor: pointer;
   display: block;
+}
+
+/*Rightclick-menu*/
+.rightclick-wrapper {
+  position: absolute;
+  visibility: hidden;
+  width: 200px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+}
+
+.rightclick-wrapper .rightclick-menu {
+  padding: 10px 12px;
+}
+
+.rightclick-content .rightclick-item {
+  list-style: none;
+  font-size: 14px;
+  height: 25px;
+  display: flex;
+  padding: 0 5px 0 10px;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.rightclick-content .rightclick-item:hover {
+  background: #f2f2f2;
+}
+
+.rightclick-content .rightclick-item span {
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.rightclick-content .detail {
+  display: flex;
+  margin-top: -5px;
+  padding: 5px 12px;
+  border-top: 1px solid #ccc;
 }

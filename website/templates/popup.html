@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Popup Content</title>
-</head>
-<body>
-    <h1>This is the popup window content</h1>
-    <p>You can add your content here.</p>
-    <button onclick="window.close()">Close Popup</button>
-</body>
-</html>
+<!-- Create subfolder Popup -->
+<div class="popup-content hidden-popup">
+    <button class="close-popup">&times;</button>
+    <br/>
+    <h6>Create a new sub-folder (under <span id="document-title"></span>)</h6>
+    <form action="/files/{document-id}" method="POST" id="popup-form">
+        <label for="title">Folder Name:</label>
+        <input type="text" id="title" name="title" required/>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div> 

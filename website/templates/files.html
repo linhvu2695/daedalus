@@ -9,7 +9,7 @@
 </div>
 
 <!-- Create subfolder Popup -->
-<div class="popup-content hidden-popup">
+<div class="popup-content hidden-popup" id="create-subfolder-popup">
     <button class="close-popup">&times;</button>
     <br/>
     <h6>Create a new sub-folder (under <span id="document-title"></span>)</h6>
@@ -24,12 +24,13 @@
 <div class="rightclick-wrapper">
     <div class="rightclick-content">
         <ul class="rightclick-menu">
-            <li class="rightclick-item open-popup">
+            <li class="rightclick-item open-popup" popup-id="create-subfolder-popup">
                 <i class="fa fa-plus"></i>
                 <span>Create new subfolder</span>
             </li>
-            <li class="rightclick-item">
-                <i class="fa fa-minus"></i><span>Delete folder</span>
+            <li class="rightclick-item" popup-id="delete-folder-popup">
+                <i class="fa fa-minus"></i>
+                <span>Delete folder</span>
             </li>
         </ul>
     </div>

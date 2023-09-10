@@ -5,15 +5,19 @@ let blurBg = document.querySelector(".blur-bg");
 
 openPopups.forEach(function (openPopup) {
     openPopup.addEventListener("click", function () {
-        const documentId = openPopup.getAttribute("document-id");
-        const documentTitle = openPopup.getAttribute("document-title");
+        let documentId = openPopup.getAttribute("document-id");
+        let documentTitle = openPopup.getAttribute("document-title");
+        let popupId = openPopup.getAttribute("popup-id");
 
-        const documentTitleSpan = popupContent.querySelector("#document-title");
-        const popupForm = popupContent.querySelector("#popup-form");
+        // Connect popup to menu-action
+        let popup = document.getElementById(popupId);
+         
+        let documentTitleSpan = popup.querySelector("#document-title");
+        let popupForm = popup.querySelector("#popup-form");
         documentTitleSpan.textContent = documentTitle;
         popupForm.action = "files/" + documentId;
 
-        popupContent.classList.remove("hidden-popup");
+        popup.classList.remove("hidden-popup");
         blurBg.classList.remove("hidden-blur");
     });
 })

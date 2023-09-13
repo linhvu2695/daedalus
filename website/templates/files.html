@@ -8,33 +8,9 @@
     {{browser_tree | safe}}
 </div>
 
-<!-- Create subfolder Popup -->
-<div class="popup-content hidden-popup" id="create-subfolder-popup">
-    <button class="close-popup">&times;</button>
-    <br/>
-    <h6>Create a new sub-folder (under <span id="document-title"></span>)</h6>
-    <form action="/files/{document-id}" method="POST" id="popup-form">
-        <label for="title">Folder Name:</label>
-        <input type="text" id="title" name="title" required/>
-        <button type="submit" class="btn btn-primary">Create</button>
-    </form>
-</div> 
+{{popup | safe}}
 
-<!-- Rightclick menu -->
-<div class="rightclick-wrapper">
-    <div class="rightclick-content">
-        <ul class="rightclick-menu">
-            <li class="rightclick-item open-popup" popup-id="create-subfolder-popup">
-                <i class="fa fa-plus"></i>
-                <span>Create new subfolder</span>
-            </li>
-            <li class="rightclick-item" popup-id="delete-folder-popup">
-                <i class="fa fa-minus"></i>
-                <span>Delete folder</span>
-            </li>
-        </ul>
-    </div>
-</div>
+{{rightclick_menu | safe}}
 
 <div class="blur-bg hidden-blur"></div>
 

@@ -9,9 +9,12 @@ files = Blueprint("files", __name__)
 @files.route("/files")
 @login_required
 def files_explore():
-    return render_template("files.html", user=current_user, browser_tree=get_rendered_document_tree(AppConst.DEFAULT_STORAGE_ID))
+    return render_template("files.html", user=current_user, 
+                           browser_tree=get_rendered_document_tree(AppConst.DEFAULT_STORAGE_ID),
+                           popup=render_template("popup.html"),
+                           rightclick_menu=render_template("rightclick_menu.html"))
 
-@files.route("/files/<int:mother_id>", methods=["POST"])
+@files.route("/files/folder/<int:mother_id>", methods=["POST"])
 def create_subfolder(mother_id):
     new_subfolder = Document(title=request.form.get(Document.Const.FIELD_TITLE), 
              doctype=Document.Const.DOCTYPE_FOLDER,
@@ -21,6 +24,54 @@ def create_subfolder(mother_id):
     print(f"New subfolder created: {new_subfolder.title}")
 
     return redirect(url_for("files.files_explore"))
+
+@files.route("/files/folder/delete/<int:folder_id>", methods=["POST"])
+def delete_folder(folder_id):
+    children_query = Document.query.filter_by(mother=folder_id)
+
+    # Delete all children documents
+    sub_documents = children_query.filter(Document.doctype!=Document.Const.DOCTYPE_FOLDER).all()
+    for doc in sub_documents:
+        _delete_document(doc)
+
+    # Delete all children folders recursively
+    subfolders = children_query.filter_by(doctype=Document.Const.DOCTYPE_FOLDER).all()
+    for subfolder in subfolders:
+        delete_folder(subfolder.id)
+
+    # Delete the folder itself
+    folder = Document.query.get(folder_id)
+    if (folder):
+        if (folder.doctype != Document.Const.DOCTYPE_FOLDER):
+            print(f"Document id {folder_id} is not a folder.")
+        else:
+            _delete_document(folder)
+    else:
+        print(f"Folder id {folder_id} not found")
+
+    return redirect(url_for("files.files_explore"))
+
+@files.route("files/doc/delete/<int:doc_id>", methods=["POST"])
+def delete_document(doc_id):
+    doc = Document.query.get(doc_id)
+    if (doc):
+        if (doc.doctype == Document.Const.DOCTYPE_FOLDER):
+            print(f"Document {doc_id} is a folder.")
+            print(f"To delete a folder via API, please use {url_for(delete_folder.__name__, folder_id=doc_id)}")
+        else:
+            _delete_document(doc)
+    else:
+        print(f"Document id {doc_id} not found")
+
+    return redirect(url_for("files.files_explore"))
+
+def _delete_document(document):
+    """
+    Function to actually delete the queried document in database.
+    """
+    db.session.delete(document)
+    db.session.commit()
+    print(f"Document {document.title} deleted successfully")
 
 def get_rendered_document_tree(root_id: int) -> str:
     """

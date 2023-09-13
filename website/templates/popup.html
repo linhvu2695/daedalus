@@ -1,11 +1,22 @@
 <!-- Create subfolder Popup -->
-<div class="popup-content hidden-popup">
+<div class="popup-content hidden-popup" id="create-subfolder-popup">
     <button class="close-popup">&times;</button>
-    <br/>
+    <br />
     <h6>Create a new sub-folder (under <span id="document-title"></span>)</h6>
-    <form action="/files/{document-id}" method="POST" id="popup-form">
+    <form action="/files/folder/{document-id}" method="POST" id="popup-form">
         <label for="title">Folder Name:</label>
-        <input type="text" id="title" name="title" required/>
+        <input type="text" id="title" name="title" required />
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
-</div> 
+</div>
+
+<!-- Delete folder Popup -->
+<div class="popup-content hidden-popup" id="delete-folder-popup">
+    <button class="close-popup">&times;</button>
+    <br />
+    <h6>Do you want to delete folder <span id="document-title"></span>?</h6>
+    <form action="files/folder/delete/{document-id}" method="POST" id="popup-form" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">Confirm</button>
+    </form>
+    <button class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
+</div>

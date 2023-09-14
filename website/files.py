@@ -27,7 +27,7 @@ def create_subfolder(mother_id):
 
 @files.route("/files/folder/delete/<int:folder_id>", methods=["POST"])
 def delete_folder(folder_id):
-    children_query = Document.query.filter_by(mother=folder_id)
+    children_query = Document.query.filter_by(mother=folder_id, binned=False)
 
     # Delete all children documents
     sub_documents = children_query.filter(Document.doctype!=Document.Const.DOCTYPE_FOLDER).all()
@@ -53,7 +53,7 @@ def delete_folder(folder_id):
 
 @files.route("files/doc/delete/<int:doc_id>", methods=["POST"])
 def delete_document(doc_id):
-    doc = Document.query.get(doc_id)
+    doc = Document.query.get(doc_id).filter_by(binned=False)
     if (doc):
         if (doc.doctype == Document.Const.DOCTYPE_FOLDER):
             print(f"Document {doc_id} is a folder.")
@@ -69,7 +69,7 @@ def _delete_document(document):
     """
     Function to actually delete the queried document in database.
     """
-    db.session.delete(document)
+    document.binned = True
     db.session.commit()
     print(f"Document {document.title} deleted successfully")
 
@@ -86,12 +86,13 @@ def get_document_tree(root_id: int) -> DocumentTree:
     # Get default storage
     root_document = Document.query.filter_by(
         id=root_id,
+        binned=False
         ).first()
     if not root_document: return {}
 
     root_node = DocumentNode(root_document)
 
-    children = Document.query.filter_by(mother=root_id).all()
+    children = Document.query.filter_by(mother=root_id, binned=False).all()
     for child in children:
         child_node = get_document_tree(child.id).root
         root_node.add_child(child_node)

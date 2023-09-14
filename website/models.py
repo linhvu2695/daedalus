@@ -9,6 +9,13 @@ class Contact(db.Model, UserMixin):
     first_name = db.Column(db.String(150))
     last_name = db.Column(db.String(150))
 
+    class Const:
+        FIELD_ID = "id"
+        FIELD_EMAIL = "email"
+        FIELD_PASSWORD = "password"
+        FIELD_FIRST_NAME = "first_name"
+        FIELD_LAST_NAME = "last_name"
+
 class Document(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000))
@@ -17,6 +24,7 @@ class Document(db.Model):
     doctype = db.Column(db.String(150))
     subtype = db.Column(db.String(150))
     mother = db.Column(db.Integer)
+    binned = db.Column(db.Boolean, default=False)
 
     class Const:
         FIELD_ID = "id"

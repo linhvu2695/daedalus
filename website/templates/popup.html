@@ -20,3 +20,14 @@
     </form>
     <button class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
 </div>
+
+<!-- Upload Popup -->
+<div class="popup-content hidden-popup" id="upload-popup">
+    <button class="close-popup">&times;</button>
+    <br />
+    <h6>Upload to <span id="document-title"></span>?</h6>
+    <form action="/files/doc/upload/{document-id}" enctype="multipart/form-data" method="POST" id="popup-form">
+        <input type="file" name="content" multiple/>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>

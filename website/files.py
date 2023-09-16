@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
+
+from .services.ingest_service import *
 from . import db, AppConst
 from .models import Document
 from .structure.document import *
@@ -16,12 +18,27 @@ def files_explore():
 
 @files.route("/files/folder/<int:mother_id>", methods=["POST"])
 def create_subfolder(mother_id):
-    new_subfolder = Document(title=request.form.get(Document.Const.FIELD_TITLE), 
-             doctype=Document.Const.DOCTYPE_FOLDER,
-             mother=mother_id)
+    new_subfolder = Document(title=request.form.get(Document.Const.FIELD_TITLE),
+                             doctype=Document.Const.DOCTYPE_FOLDER,
+                             mother=mother_id)
     db.session.add(new_subfolder)
     db.session.commit()
     print(f"New subfolder created: {new_subfolder.title}")
+
+    return redirect(url_for("files.files_explore"))
+
+@files.route("files/doc/upload/<int:mother_id>", methods=["POST"])
+def upload_document(mother_id):
+    uploaded_files = request.files.getlist("content")
+
+    for file in uploaded_files:
+        mediatype, subtype = _extract_types(file.mimetype)
+
+        if mediatype == Document.Const.DOCTYPE_IMAGE:
+            ingest_service = ImageIngestService()
+            ingest_service.ingest_document(mother_id, file)
+
+    print(f"Upload to folder {mother_id}")
 
     return redirect(url_for("files.files_explore"))
 
@@ -65,13 +82,7 @@ def delete_document(doc_id):
 
     return redirect(url_for("files.files_explore"))
 
-def _delete_document(document):
-    """
-    Function to actually delete the queried document in database.
-    """
-    document.binned = True
-    db.session.commit()
-    print(f"Document {document.title} deleted successfully")
+# Public functions
 
 def get_rendered_document_tree(root_id: int) -> str:
     """
@@ -103,3 +114,22 @@ def get_document_tree(root_id: int) -> DocumentTree:
     doc_tree.add_node(root_node)
 
     return doc_tree
+
+# Private functions
+
+def _delete_document(document):
+    """
+    Function to actually delete the queried document in database.
+    """
+    document.binned = True
+    db.session.commit()
+    print(f"Document {document.title} deleted successfully")
+
+def _extract_types(mimetype: str) -> (str, str):
+    parts = mimetype.split("/")
+
+    if len(parts) != 2:
+        return None, None
+    doctype = parts[0].strip()
+    subtype = parts[1].strip()
+    return doctype, subtype

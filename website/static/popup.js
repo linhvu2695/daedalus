@@ -15,16 +15,18 @@ openPopups.forEach(function (openPopup) {
         if (popup != null) {
             popup.setAttribute("document-id", documentId);
             popup.setAttribute("document-title", documentTitle);
+
+            popup.querySelector("#document-title").textContent = documentTitle;
             switch (popupId)
             {
                 case "create-subfolder-popup":
-                    popup.querySelector("#document-title").textContent = documentTitle;
                     popup.querySelector("#popup-form").action = "files/folder/" + documentId;
                     break;
                 case "delete-folder-popup":
-                    popup.querySelector("#document-title").textContent = documentTitle;
                     popup.querySelector("#popup-form").action = "files/folder/delete/" + documentId;
-                    // popup.querySelector("#popup-form").method = "DELETE";
+                    break;
+                case "upload-popup":
+                    popup.querySelector("#popup-form").action = "files/doc/upload/" + documentId;
                     break;
             }
 

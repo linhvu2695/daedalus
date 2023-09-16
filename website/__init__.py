@@ -31,7 +31,7 @@ def create_app():
 
     # Login management
     from .models import Contact
-    
+
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -50,6 +50,8 @@ class AppConst:
 
     DEFAULT_STORAGE_ID = 1
     DEFAULT_STORAGE_TITLE = "Storage"
+
+    SEPARATOR_PATH = "/"
 
 # Helpers
 def create_database(app):

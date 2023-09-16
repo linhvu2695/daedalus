@@ -25,6 +25,7 @@ class Document(db.Model):
     subtype = db.Column(db.String(150))
     mother = db.Column(db.Integer)
     binned = db.Column(db.Boolean, default=False)
+    original_filename = db.Column(db.String(1000))
 
     class Const:
         FIELD_ID = "id"
@@ -37,3 +38,5 @@ class Document(db.Model):
 
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"
+
+        SUBTYPE_STANDARD_IMAGE = "standard image"

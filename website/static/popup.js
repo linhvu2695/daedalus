@@ -20,13 +20,13 @@ openPopups.forEach(function (openPopup) {
             switch (popupId)
             {
                 case "create-subfolder-popup":
-                    popup.querySelector("#popup-form").action = "files/folder/create/" + documentId;
+                    popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
                     break;
                 case "delete-folder-popup":
-                    popup.querySelector("#popup-form").action = "files/folder/delete/" + documentId;
+                    popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
                     break;
                 case "upload-popup":
-                    popup.querySelector("#popup-form").action = "files/doc/upload/" + documentId;
+                    popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
                     break;
             }
 

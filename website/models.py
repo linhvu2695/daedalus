@@ -26,6 +26,7 @@ class Document(db.Model):
     mother = db.Column(db.Integer)
     binned = db.Column(db.Boolean, default=False)
     original_filename = db.Column(db.String(1000))
+    extension = db.Column(db.String(20))
 
     class Const:
         FIELD_ID = "id"

@@ -25,7 +25,8 @@ class ImageIngestService(IngestService):
     def ingest_document(self, mother_id: int, file: FileStorage):
         print(f"Processing {file.filename}...")
 
-        filename = secure_filename(file.filename)
+        original_filename = secure_filename(file.filename)
+        filename, extension = path.splitext(original_filename)
         container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH]
         storage_path = container_path + AppConst.SEPARATOR_PATH + filename
 
@@ -34,7 +35,8 @@ class ImageIngestService(IngestService):
                                 subtype=Document.Const.SUBTYPE_STANDARD_IMAGE,
                                 mother=mother_id,
                                 storage_path=storage_path,
-                                original_filename=filename)
+                                original_filename=original_filename,
+                                extension=extension)
         db.session.add(new_document)
         db.session.commit()
 

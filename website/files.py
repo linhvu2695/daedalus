@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, session, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 
 from .services.ingest_service import *
@@ -8,15 +8,29 @@ from .structure.document import *
 
 files = Blueprint("files", __name__)
 
+# Constants
+class Const:
+    SESSION_CURRENT_FOLDER_KEY = "current_folder"
+
 @files.route("/files")
 @login_required
 def files_explore():
-    return render_template("files.html", user=current_user, 
-                           browser_tree=get_rendered_document_tree(AppConst.DEFAULT_STORAGE_ID),
+    return redirect(url_for("files.open_folder", folder_id=AppConst.DEFAULT_STORAGE_ID))
+
+@files.route("/files/folder/<int:folder_id>")
+@login_required
+def open_folder(folder_id: int):
+    # TODO: handle non-folder id
+
+    session[Const.SESSION_CURRENT_FOLDER_KEY] = folder_id
+    return render_template("files.html", user=current_user,
+                           browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
+                           folder_content=get_rendered_folder_content(folder_id),
                            popup=render_template("popup.html"),
                            rightclick_menu=render_template("rightclick_menu.html"))
 
-@files.route("/files/folder/<int:mother_id>", methods=["POST"])
+@files.route("/files/folder/create/<int:mother_id>", methods=["POST"])
+@login_required
 def create_subfolder(mother_id):
     new_subfolder = Document(title=request.form.get(Document.Const.FIELD_TITLE),
                              doctype=Document.Const.DOCTYPE_FOLDER,
@@ -25,9 +39,10 @@ def create_subfolder(mother_id):
     db.session.commit()
     print(f"New subfolder created: {new_subfolder.title}")
 
-    return redirect(url_for("files.files_explore"))
+    return open_current_folder_redirect()
 
 @files.route("files/doc/upload/<int:mother_id>", methods=["POST"])
+@login_required
 def upload_document(mother_id):
     uploaded_files = request.files.getlist("content")
 
@@ -40,9 +55,10 @@ def upload_document(mother_id):
 
     print(f"Upload to folder {mother_id}")
 
-    return redirect(url_for("files.files_explore"))
+    return open_current_folder_redirect()
 
 @files.route("/files/folder/delete/<int:folder_id>", methods=["POST"])
+@login_required
 def delete_folder(folder_id):
     children_query = Document.query.filter_by(mother=folder_id, binned=False)
 
@@ -66,9 +82,10 @@ def delete_folder(folder_id):
     else:
         print(f"Folder id {folder_id} not found")
 
-    return redirect(url_for("files.files_explore"))
+    return open_current_folder_redirect()
 
 @files.route("files/doc/delete/<int:doc_id>", methods=["POST"])
+@login_required
 def delete_document(doc_id):
     doc = Document.query.get(doc_id).filter_by(binned=False)
     if (doc):
@@ -80,21 +97,34 @@ def delete_document(doc_id):
     else:
         print(f"Document id {doc_id} not found")
 
-    return redirect(url_for("files.files_explore"))
+    return open_current_folder_redirect()
 
 # Public functions
 
-def get_rendered_document_tree(root_id: int) -> str:
+def open_current_folder_redirect():
+    """
+    Redirect to current folder view
+    """
+    return redirect(url_for("files.open_folder", folder_id=session[Const.SESSION_CURRENT_FOLDER_KEY]))
+
+def get_rendered_browser_tree(root_id: int) -> str:
     """
     Get the rendered HTML of the full document tree
     """
-    return get_document_tree(root_id).render_tree()
+    return get_document_tree(root_id, 
+                             filtered_doctypes=[Document.Const.DOCTYPE_FOLDER], 
+                             seethru=True).render_tree()
 
-def get_document_tree(root_id: int) -> DocumentTree:
+def get_document_tree(root_id: int, filtered_doctypes=[], seethru=False) -> DocumentTree:
     """
     Get a document tree 
+
+    Parameters:
+        root_id (int): Root Folder ID 
+        filtered_doctyes (list[str], optional): Doctypes to be included in the DocumentTree
+        seethru (bool, optional): If the value is False, only retrieve direct children of the folder
     """
-    # Get default storage
+    # Get root document
     root_document = Document.query.filter_by(
         id=root_id,
         binned=False
@@ -103,21 +133,62 @@ def get_document_tree(root_id: int) -> DocumentTree:
 
     root_node = DocumentNode(root_document)
 
-    children = Document.query.filter_by(mother=root_id, binned=False).all()
-    for child in children:
-        child_node = get_document_tree(child.id).root
-        root_node.add_child(child_node)
+    children_query = Document.query.filter_by(mother=root_id, binned=False)
+    if len(filtered_doctypes) > 0:
+        children_query = children_query.filter(Document.doctype.in_(filtered_doctypes))
+    children = children_query.all()
 
-    # TODO: add chidren recursively
+    for child in children:
+        if seethru:
+            child_node = get_document_tree(child.id, filtered_doctypes).root
+        else:
+            child_node = DocumentNode(child)
+        root_node.add_child(child_node)
 
     doc_tree = DocumentTree()
     doc_tree.add_node(root_node)
 
     return doc_tree
 
+def get_rendered_folder_content(folder_id: int, seethru=False) -> str:
+    """
+    Get the rendered HTML of the folder content
+
+    Parameters:
+        folder_id (int): Folder ID 
+        seethru (bool, optional): If the value is False, only retrieve direct children of the folder
+    """
+    documents = get_all_descendants_document(folder_id, seethru=seethru)
+    
+    return render_template("folder_content.html", documents=documents)
+
+def get_all_descendants_document(folder_id: int, seethru=False) -> list[Document]:
+    """
+    Function to get all documents that are contained in a folder.
+
+    Parameters:
+        folder_id (int): Folder ID 
+        seethru (bool, optional): If the value is False, only retrieve direct children of the folder
+    """
+    document_tree = get_document_tree(folder_id, seethru=seethru)
+    return _get_all_descendants_document(document_tree.root)
+
 # Private functions
 
-def _delete_document(document):
+def _get_all_descendants_document(document_node: DocumentNode) -> list[Document]:
+    """
+    Helper function to get all documents that are contained in a folder in DFS manner.
+    """
+    documents = []
+
+    for child in document_node.children:
+        documents += [child.document]
+        if (child.document.doctype == Document.Const.DOCTYPE_FOLDER):
+            documents += _get_all_descendants_document(child)
+    
+    return documents
+
+def _delete_document(document) -> None:
     """
     Function to actually delete the queried document in database.
     """

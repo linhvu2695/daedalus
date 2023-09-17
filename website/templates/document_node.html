@@ -1,7 +1,10 @@
 <ul class="document-tree">
-    <li class="open-rightclick-menu document-node" document-id="{{node.document.id}}" document-title="{{node.document.title}}">
-        <i class="fa fa-regular fa-folder"></i>&nbsp;{{node.document.title}}
-    </li>
+    <a href="/files/folder/{{node.document.id}}">
+        <li class="open-rightclick-menu document-node" document-id="{{node.document.id}}"
+            document-title="{{node.document.title}}">
+            <i class="fa fa-regular fa-folder"></i>&nbsp;{{node.document.title}}
+        </li>
+    </a>
 
     {%for child in node.children%}
     <li>
@@ -9,4 +12,3 @@
     </li>
     {%endfor%}
 </ul>
-

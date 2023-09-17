@@ -3,7 +3,7 @@
     <button class="close-popup">&times;</button>
     <br />
     <h6>Create a new sub-folder (under <span id="document-title"></span>)</h6>
-    <form action="/files/folder/{document-id}" method="POST" id="popup-form">
+    <form action="/files/folder/create/{document-id}" method="POST" id="popup-form">
         <label for="title">Folder Name:</label>
         <input type="text" id="title" name="title" required />
         <button type="submit" class="btn btn-primary">Create</button>

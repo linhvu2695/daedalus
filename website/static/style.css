@@ -61,14 +61,23 @@
 /* Document tree*/
 #browser-tree {
   position: fixed;
-  top: 20;
   left: 0;
   height: 100%;
   width: 300px;
   background-color: #fff;
   border-right: 1px solid #ccc;
+  border-top: 1px solid #ccc;
   overflow-y: auto;
 }
+
+#folder-content {
+    position: fixed;
+    left: 312px;
+    height: 100%;
+    width: 900px;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+  }
 
 .document-tree {
   list-style-type: none;

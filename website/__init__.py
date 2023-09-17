@@ -12,15 +12,16 @@ def create_app():
     app = Flask(__name__)
     app.config[AppConst.CONFIG_SECRET_KEY] = "mysecret"
     app.config[AppConst.CONFIG_SQLALCHEMY_DATABASE_URI] = f"sqlite:///{DB_NAME}"
-    app.config[AppConst.CONFIG_STORAGE_PATH] = "storage" 
+    app.config[AppConst.CONFIG_STORAGE_PATH] = "/Users/vlinh/Code/personal/projects/flask-web-app/storage" 
 
     # Views management
     from .views import views
     from .auth import auth
     from .upload import upload
     from .files import files
+    from .buffer import buffer
 
-    for blueprint in [views, auth, upload, files]:
+    for blueprint in [views, auth, upload, files, buffer]:
         app.register_blueprint(blueprint=blueprint, url_prefix="/")    
 
     # Database management

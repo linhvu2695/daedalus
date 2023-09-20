@@ -1,4 +1,16 @@
-{% for doc in documents %}
-<p>{{doc.title}}</p>
-<img src="/buffer/{{doc.storage_path}}">
-{% endfor %}
+<div class="item-grid">
+    {% for doc in documents %}
+    <div class = "item-viewer 
+    {% if doc.doctype == 'folder' %}folder-item-viewer{% else %}document-item-viewer{% endif %}"
+     document-id="{{doc.id}}" 
+     document-title="{{doc.title}}" 
+     doctype="{{doc.doctype}}">
+        <h6>{{doc.title}}</h6>
+        {% if doc.doctype == "image" %}
+        <img src="/buffer/{{doc.storage_path}}" style="border-radius: 5px;">
+        {% else %}
+        <i class="fa fa-folder"></i>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>

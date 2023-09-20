@@ -28,7 +28,7 @@ class ImageIngestService(IngestService):
         original_filename = secure_filename(file.filename)
         filename, extension = path.splitext(original_filename)
         container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH]
-        storage_path = container_path + AppConst.SEPARATOR_PATH + filename
+        storage_path = container_path + AppConst.SEPARATOR_PATH + original_filename
 
         new_document = Document(title=filename,
                                 doctype=Document.Const.DOCTYPE_IMAGE,
@@ -40,4 +40,4 @@ class ImageIngestService(IngestService):
         db.session.add(new_document)
         db.session.commit()
 
-        file.save(path.join(container_path, filename))
+        file.save(path.join(container_path, original_filename))

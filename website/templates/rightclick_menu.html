@@ -1,5 +1,5 @@
-<!-- Rightclick menu -->
-<div class="rightclick-wrapper">
+<!-- Folder rightclick menu -->
+<div class="rightclick-wrapper" id="rightclick-folder">
     <div class="rightclick-content">
         <ul class="rightclick-menu">
             <li class="rightclick-item open-popup" popup-id="create-subfolder-popup">
@@ -7,12 +7,24 @@
                 <span>Create new subfolder</span>
             </li>
             <li class="rightclick-item open-popup" popup-id="delete-folder-popup">
-                <i class="fa fa-minus"></i>
-                <span>Delete folder</span>
+                <i class="fa fa-times"></i>
+                <span>Delete</span>
             </li>
             <li class="rightclick-item open-popup" popup-id="upload-popup">
                 <i class="fa fa-upload"></i>
                 <span>Upload</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Document rightclick menu -->
+<div class="rightclick-wrapper" id="rightclick-document">
+    <div class="rightclick-content">
+        <ul class="rightclick-menu">
+            <li class="rightclick-item open-popup" popup-id="delete-document-popup">
+                <i class="fa fa-times"></i>
+                <span>Delete</span>
             </li>
         </ul>
     </div>

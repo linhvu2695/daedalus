@@ -31,3 +31,14 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 </div>
+
+<!-- Delete document Popup -->
+<div class="popup-content hidden-popup" id="delete-document-popup">
+    <button class="close-popup">&times;</button>
+    <br />
+    <h6>Do you want to delete document <span id="document-title"></span>?</h6>
+    <form action="/files/document/delete/{document-id}" method="POST" id="popup-form" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">Confirm</button>
+    </form>
+    <button class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
+</div>

@@ -12,7 +12,7 @@ def create_app():
     app = Flask(__name__)
     app.config[AppConst.CONFIG_SECRET_KEY] = "mysecret"
     app.config[AppConst.CONFIG_SQLALCHEMY_DATABASE_URI] = f"sqlite:///{DB_NAME}"
-    app.config[AppConst.CONFIG_STORAGE_PATH] = "/Users/vlinh/Code/personal/projects/flask-web-app/storage" 
+    app.config[AppConst.CONFIG_STORAGE_PATH] = "/Users/vlinh/Code/personal/projects/daedalus/storage" 
 
     # Views management
     from .views import views

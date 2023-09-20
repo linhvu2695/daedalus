@@ -28,6 +28,9 @@ openPopups.forEach(function (openPopup) {
                 case "upload-popup":
                     popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
                     break;
+                case "delete-document-popup":
+                    popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
+                    break;
             }
 
             popup.classList.remove("hidden-popup");

@@ -87,11 +87,13 @@ def delete_folder(folder_id):
 @files.route("files/doc/delete/<int:doc_id>", methods=["POST"])
 @login_required
 def delete_document(doc_id):
-    doc = Document.query.get(doc_id).filter_by(binned=False)
+    doc = Document.query.get(doc_id)
     if (doc):
         if (doc.doctype == Document.Const.DOCTYPE_FOLDER):
             print(f"Document {doc_id} is a folder.")
             print(f"To delete a folder via API, please use {url_for(delete_folder.__name__, folder_id=doc_id)}")
+        elif (doc.binned == True):
+            print(f"Document {doc_id} is already deleted.")
         else:
             _delete_document(doc)
     else:
@@ -140,7 +142,7 @@ def get_document_tree(root_id: int, filtered_doctypes=[], seethru=False) -> Docu
 
     for child in children:
         if seethru:
-            child_node = get_document_tree(child.id, filtered_doctypes).root
+            child_node = get_document_tree(child.id, filtered_doctypes, seethru).root
         else:
             child_node = DocumentNode(child)
         root_node.add_child(child_node)

@@ -134,3 +134,22 @@
   padding: 5px 12px;
   border-top: 1px solid #ccc;
 }
+
+/* Item viewer */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+  grid-gap: 10px;
+}
+
+.item-viewer {
+  border: 1px solid #ccc; 
+  border-radius: 5px;
+  padding: 10px; 
+  text-align: center; 
+}
+
+.item-viewer img {
+  max-width: 100%; 
+  height: auto;   
+}

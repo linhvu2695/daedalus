@@ -1,0 +1,7 @@
+<div class="breadcrumb">
+    {% for id in ancestor_ids %}
+    <a href="{{id}}">{{id2title[id]}}</a>
+    <span> &gt; </span>
+    {% endfor %}
+    <span>{{id2title[current_id]}}</span>
+</div>

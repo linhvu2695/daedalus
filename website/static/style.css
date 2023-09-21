@@ -135,7 +135,36 @@
   border-top: 1px solid #ccc;
 }
 
+/* Breadcrumb */
+
+.breadcrumb {
+  font-size: 16px;
+  margin: 0 10px 10px 0;
+  background-color: #f2f2f2;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: #007bff; 
+  transition: color 0.3s ease; 
+}
+
+.breadcrumb a:hover {
+  color: #0056b3; 
+}
+
+.breadcrumb span {
+  margin: 0 5px;
+  color: #999; 
+}
+
+.breadcrumb span:last-child {
+  color: #333; 
+  font-weight: bold;
+}
+
 /* Item viewer */
+
 .item-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 

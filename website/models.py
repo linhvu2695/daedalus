@@ -27,6 +27,8 @@ class Document(db.Model):
     binned = db.Column(db.Boolean, default=False)
     original_filename = db.Column(db.String(1000))
     extension = db.Column(db.String(20))
+    lineage_path = db.Column(db.String(10000))
+
 
     class Const:
         FIELD_ID = "id"
@@ -36,6 +38,10 @@ class Document(db.Model):
         FIELD_DOCTYPE = "doctype"
         FIELD_SUBTYPE = "subtype"
         FIELD_MOTHER = "mother"
+        FIELD_BINNED = "binned"
+        FIELD_ORIGINAL_FILENAME = "original_filename"
+        FIELD_EXTENSION = "extension"
+        FIELD_LINEAGE_PATH = "lineage_path"
 
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"

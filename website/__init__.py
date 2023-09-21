@@ -69,6 +69,7 @@ def create_database(app):
             title=AppConst.DEFAULT_STORAGE_TITLE,
             storage_path=app.config[AppConst.CONFIG_STORAGE_PATH],
             doctype=Document.Const.DOCTYPE_FOLDER,
+            lineage_path=AppConst.DEFAULT_STORAGE_ID
             )
         db.session.add(new_default_storage)
         db.session.commit()

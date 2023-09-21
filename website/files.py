@@ -39,6 +39,11 @@ def create_subfolder(mother_id):
     db.session.commit()
     print(f"New subfolder created: {new_subfolder.title}")
 
+    # Update lineage_path
+    mother_folder = Document.query.get(mother_id)
+    new_subfolder.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(new_subfolder.id)
+    db.session.commit()
+
     return open_current_folder_redirect()
 
 @files.route("files/doc/upload/<int:mother_id>", methods=["POST"])
@@ -160,9 +165,31 @@ def get_rendered_folder_content(folder_id: int, seethru=False) -> str:
         folder_id (int): Folder ID 
         seethru (bool, optional): If the value is False, only retrieve direct children of the folder
     """
+    folder = Document.query.get(folder_id)
     documents = get_all_descendants_document(folder_id, seethru=seethru)
     
-    return render_template("folder_content.html", documents=documents)
+    return render_template("folder_content.html", 
+                           folder=folder, 
+                           documents=documents, 
+                           breadcrumb=get_rendered_breadcrumb(folder.lineage_path))
+
+def get_rendered_breadcrumb(lineage_path: str) -> str:
+    lineage_ids = lineage_path.split(AppConst.SEPARATOR_PATH)
+    if len(lineage_ids) == 0:
+        print("Lineage path is missing")
+        return ""
+
+    try:
+        lineage_records = Document.query.filter(Document.id.in_(lineage_ids)).all()
+        records_id2title = {str(record.id): record.title for record in lineage_records}
+    except Exception as e:
+        print(f"Lineage path is corrupted. {e}")
+        return ""
+
+    return render_template("breadcrumb.html", 
+                           id2title=records_id2title,
+                           ancestor_ids=lineage_ids[:-1], 
+                           current_id=lineage_ids[-1])
 
 def get_all_descendants_document(folder_id: int, seethru=False) -> list[Document]:
     """

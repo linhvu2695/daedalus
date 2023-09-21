@@ -40,4 +40,10 @@ class ImageIngestService(IngestService):
         db.session.add(new_document)
         db.session.commit()
 
+        # Store the file in storage
         file.save(path.join(container_path, original_filename))
+
+        # Update lineage_path
+        mother_folder = Document.query.get(mother_id)
+        new_document.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(new_document.id)
+        db.session.commit()

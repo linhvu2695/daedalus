@@ -1,7 +1,9 @@
 <ul class="document-tree">
     <a href="/files/folder/{{node.document.id}}">
-        <li class="browser-item document-node" document-id="{{node.document.id}}"
-            document-title="{{node.document.title}}">
+        <li class="browser-item document-node" 
+            document-id="{{node.document.id}}"
+            document-title="{{node.document.title}}"
+            {% if is_current %}id="document-current-node"{% endif %}>
             <i class="fa fa-regular fa-folder"></i>&nbsp;{{node.document.title}}
         </li>
     </a>

@@ -54,6 +54,8 @@ class AppConst:
 
     SEPARATOR_PATH = "/"
 
+    SESSION_CURRENT_FOLDER_KEY = "current_folder"
+
 # Helpers
 def create_database(app):
     from .models import Document

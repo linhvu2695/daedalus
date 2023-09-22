@@ -8,10 +8,6 @@ from .structure.document import *
 
 files = Blueprint("files", __name__)
 
-# Constants
-class Const:
-    SESSION_CURRENT_FOLDER_KEY = "current_folder"
-
 @files.route("/files")
 @login_required
 def files_explore():
@@ -22,7 +18,7 @@ def files_explore():
 def open_folder(folder_id: int):
     # TODO: handle non-folder id
 
-    session[Const.SESSION_CURRENT_FOLDER_KEY] = folder_id
+    session[AppConst.SESSION_CURRENT_FOLDER_KEY] = folder_id
     return render_template("files.html", user=current_user,
                            browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
                            folder_content=get_rendered_folder_content(folder_id),
@@ -112,7 +108,7 @@ def open_current_folder_redirect():
     """
     Redirect to current folder view
     """
-    return redirect(url_for("files.open_folder", folder_id=session[Const.SESSION_CURRENT_FOLDER_KEY]))
+    return redirect(url_for("files.open_folder", folder_id=session[AppConst.SESSION_CURRENT_FOLDER_KEY]))
 
 def get_rendered_browser_tree(root_id: int) -> str:
     """

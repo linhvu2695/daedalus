@@ -1,4 +1,5 @@
-from flask import render_template
+from flask import render_template, session
+from .. import AppConst
 from ..models import Document
 
 class DocumentNode:
@@ -16,7 +17,8 @@ class DocumentNode:
         """
         Render a DocumentNode to HTML
         """
-        return render_template("document_node.html", node=self)
+        return render_template("document_node.html", node=self, 
+                               is_current=self.document.id==session[AppConst.SESSION_CURRENT_FOLDER_KEY])
 
     def to_dict(self):
         """

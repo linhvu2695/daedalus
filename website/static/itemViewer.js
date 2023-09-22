@@ -1,32 +1,45 @@
 const folderContextMenu = document.querySelector("#rightclick-folder");
 const documentContextMenu = document.querySelector("#rightclick-document");
 
+// TODO: use only 1 context menu (else we have to make sure only 1 context menu is visible at a time)
+
 let browserItems = document.querySelectorAll(".browser-item");
 let folderItemViewers = document.querySelectorAll(".folder-item-viewer")
 let documentItemViewers = document.querySelectorAll(".document-item-viewer");
 
 browserItems.forEach(function (browserItem) {
     browserItem.addEventListener("contextmenu", e => {
-        rightClickEvent(e, folderContextMenu)
+        handleRightClickEvent(e, folderContextMenu)
     })
 })
 
 folderItemViewers.forEach(function (folderItemViewer) {
     folderItemViewer.addEventListener("contextmenu", e => {
-        rightClickEvent(e, folderContextMenu)
+        handleRightClickEvent(e, folderContextMenu)
+    })
+
+    folderItemViewer.addEventListener("dblclick", e => {
+        const documentId = e.currentTarget.getAttribute('document-id');
+
+        if (documentId) {
+            const url = `/files/folder/${documentId}`;
+            window.location.href = url;
+        }
     })
 })
 
 documentItemViewers.forEach(function (documentItemViewer) {
     documentItemViewer.addEventListener("contextmenu", e => {
-        rightClickEvent(e, documentContextMenu)
+        handleRightClickEvent(e, documentContextMenu)
     })
 })
 
 document.addEventListener("click", () => folderContextMenu.style.visibility = "hidden");
 document.addEventListener("click", () => documentContextMenu.style.visibility = "hidden");
 
-function rightClickEvent (event, contextMenu)
+// Event hanlders 
+
+function handleRightClickEvent (event, contextMenu)
 {
     event.preventDefault();
     
@@ -50,3 +63,4 @@ function rightClickEvent (event, contextMenu)
         rightclickItem.setAttribute("document-title", event.currentTarget.getAttribute("document-title"));
     });
 }
+

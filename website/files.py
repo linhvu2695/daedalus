@@ -42,6 +42,22 @@ def create_subfolder(mother_id):
 
     return open_current_folder_redirect()
 
+@files.route("/files/doc/update/<int:doc_id>", methods=["POST"])
+@login_required
+def update_document(doc_id):
+    new_title = request.form.get(Document.Const.FIELD_TITLE)
+
+    document = Document.query.get(doc_id)
+
+    if (document):
+        if (new_title):
+            document.title = new_title
+
+    db.session.commit()
+    print(f"Document {doc_id} updated.")
+
+    return open_current_folder_redirect()
+
 @files.route("files/doc/upload/<int:mother_id>", methods=["POST"])
 @login_required
 def upload_document(mother_id):

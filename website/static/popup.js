@@ -22,6 +22,9 @@ openPopups.forEach(function (openPopup) {
                 case "create-subfolder-popup":
                     popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
                     break;
+                case "rename-popup":
+                    popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
+                    break;
                 case "delete-folder-popup":
                     popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
                     break;

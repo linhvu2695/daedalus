@@ -10,6 +10,17 @@
     </form>
 </div>
 
+<!-- Rename Popup -->
+<div class="popup-content hidden-popup" id="rename-popup">
+    <button class="close-popup">&times;</button>
+    <br />
+    <h6>Rename <span id="document-title"></span> to:</h6>
+    <form action="/files/doc/update/{document-id}" method="POST" id="popup-form">
+        <input type="text" id="title" name="title" required />
+        <button type="submit" class="btn btn-primary">Rename</button>
+    </form>
+</div>
+
 <!-- Delete folder Popup -->
 <div class="popup-content hidden-popup" id="delete-folder-popup">
     <button class="close-popup">&times;</button>

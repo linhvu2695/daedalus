@@ -34,6 +34,9 @@ openPopups.forEach(function (openPopup) {
                 case "delete-document-popup":
                     popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
                     break;
+                case "reindex-popup":
+                    popup.querySelector("#popup-form").action = "/index/doc/" + documentId;
+                    break;
             }
 
             popup.classList.remove("hidden-popup");
@@ -68,6 +71,6 @@ popupContents.forEach(function (popupContent) {
     });
 });
 
-function cancelDelete() {
+function cancelPopup() {
     closePopupFunction();
 }

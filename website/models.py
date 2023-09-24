@@ -29,7 +29,6 @@ class Document(db.Model):
     extension = db.Column(db.String(20))
     lineage_path = db.Column(db.String(10000))
 
-
     class Const:
         FIELD_ID = "id"
         FIELD_TITLE = "title"
@@ -43,7 +42,33 @@ class Document(db.Model):
         FIELD_EXTENSION = "extension"
         FIELD_LINEAGE_PATH = "lineage_path"
 
+        INDEXED_FIELD_ID = "ID_STRING_INDEXED"
+        INDEXED_FIELD_TITLE = "TITLE_TEXT_INDEXED"
+        INDEXED_FIELD_STORAGE_PATH = "STORAGEPATH_TEXT_INDEXED"
+        INDEXED_FIELD_CREATE_DATE = "CREATEDATE_DATE_INDEXED"
+        INDEXED_FIELD_DOCTYPE = "DOCTYPE_STRING_INDEXED"
+        INDEXED_FIELD_SUBTYPE = "SUBTYPE_STRING_INDEXED"
+        INDEXED_FIELD_ORIGINAL_FILENAME = "ORIGINALFILENAME_STRING_INDEXED"
+        INDEXED_FIELD_EXTENSION = "EXTENSION_STRING_INDEXED"
+        INDEXED_FIELD_BINNED = "BINNED_BOOLEAN_INDEXED"
+
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"
 
         SUBTYPE_STANDARD_IMAGE = "standard image"
+
+    def to_index_dict(self):
+        """
+        Convert the Document object to a dictionary.
+        """
+        return {
+            self.Const.INDEXED_FIELD_ID: str(self.id),
+            self.Const.INDEXED_FIELD_TITLE: self.title,
+            self.Const.INDEXED_FIELD_STORAGE_PATH: self.storage_path,
+            self.Const.INDEXED_FIELD_CREATE_DATE: self.create_date,
+            self.Const.INDEXED_FIELD_DOCTYPE: self.doctype,
+            self.Const.INDEXED_FIELD_SUBTYPE: self.subtype,
+            self.Const.INDEXED_FIELD_ORIGINAL_FILENAME: self.original_filename,
+            self.Const.INDEXED_FIELD_EXTENSION: self.extension,
+            self.Const.INDEXED_FIELD_BINNED: self.binned,
+        }

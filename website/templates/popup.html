@@ -29,7 +29,7 @@
     <form action="/files/folder/delete/{document-id}" method="POST" id="popup-form" style="display: inline-block;">
         <button type="submit" class="btn btn-primary">Confirm</button>
     </form>
-    <button class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
+    <button class="btn btn-secondary" onclick="cancelPopup()">Cancel</button>
 </div>
 
 <!-- Upload Popup -->
@@ -51,5 +51,16 @@
     <form action="/files/document/delete/{document-id}" method="POST" id="popup-form" style="display: inline-block;">
         <button type="submit" class="btn btn-primary">Confirm</button>
     </form>
-    <button class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
+    <button class="btn btn-secondary" onclick="cancelPopup()">Cancel</button>
+</div>
+
+<!-- Reindex Popup -->
+<div class="popup-content hidden-popup" id="reindex-popup">
+    <button class="close-popup">&times;</button>
+    <br />
+    <h6>Reindex <span id="document-title"></span>?</h6>
+    <form action="/index/doc/{document-id}" method="POST" id="popup-form" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">Reindex</button>
+    </form>
+    <button class="btn btn-secondary" onclick="cancelPopup()">Cancel</button>
 </div>

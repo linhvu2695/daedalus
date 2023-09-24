@@ -5,6 +5,7 @@ from .services.ingest_service import *
 from . import db, AppConst
 from .models import Document
 from .structure.document import *
+from .elasticsearch import search, index
 
 files = Blueprint("files", __name__)
 
@@ -40,6 +41,9 @@ def create_subfolder(mother_id):
     new_subfolder.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(new_subfolder.id)
     db.session.commit()
 
+    # Index document
+    index.index_document(new_subfolder)
+
     return open_current_folder_redirect()
 
 @files.route("/files/doc/update/<int:doc_id>", methods=["POST"])
@@ -55,6 +59,9 @@ def update_document(doc_id):
 
     db.session.commit()
     print(f"Document {doc_id} updated.")
+
+    # Reindex document
+    index.index_document(document)
 
     return open_current_folder_redirect()
 
@@ -236,6 +243,9 @@ def _delete_document(document) -> None:
     document.binned = True
     db.session.commit()
     print(f"Document {document.title} deleted successfully")
+
+    # Reindex document
+    index.index_document(document)
 
 def _extract_types(mimetype: str) -> (str, str):
     parts = mimetype.split("/")

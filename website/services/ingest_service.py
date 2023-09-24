@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from os import path
 from .. import db, AppConst
 from ..models import Document
+from ..elasticsearch import index
 
 class IngestService:
     """
@@ -47,3 +48,6 @@ class ImageIngestService(IngestService):
         mother_folder = Document.query.get(mother_id)
         new_document.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(new_document.id)
         db.session.commit()
+
+        # Index document
+        index.index_document(new_document)

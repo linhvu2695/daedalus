@@ -24,9 +24,10 @@ def create_app():
     from .upload import upload
     from .files import files
     from .buffer import buffer
+    from .jobs import jobs
     from .elasticsearch.index import index
 
-    for blueprint in [views, auth, upload, files, buffer, index]:
+    for blueprint in [views, auth, upload, files, buffer, jobs, index]:
         app.register_blueprint(blueprint=blueprint, url_prefix="/")
 
     # Database management

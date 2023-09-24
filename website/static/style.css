@@ -58,7 +58,7 @@
   display: none;
 }
 
-/* Document tree*/
+/* Document tree */
 #browser-tree {
   position: fixed;
   left: 0;
@@ -98,7 +98,7 @@
   font-weight: bold;
 }
 
-/*Rightclick-menu*/
+/* Rightclick-menu */
 .rightclick-wrapper {
   position: absolute;
   visibility: hidden;
@@ -186,4 +186,34 @@
 .item-viewer img {
   max-width: 100%; 
   height: auto;   
+}
+
+/* Jobs cell */
+.job-cell {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.job-title {
+  font-weight: bold;
+  grid-column: span 2;
+}
+
+.job-description {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.job-execute-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
 }

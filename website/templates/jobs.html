@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Jobs{% endblock %}
+
+{%block content%}
+<br />
+<h1>Jobs</h1>
+<br/>
+
+<div class="job-cell">
+    <div class="job-title">Full re-indexing</div>
+    <div class="job-description">Reindex all documents</div>
+    <form action="/index/doc/full" method="POST">
+        <button type="submit" class="btn btn-primary">Execute</button>
+    </form>
+</div>
+
+{%endblock%}

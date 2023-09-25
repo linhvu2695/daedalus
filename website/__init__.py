@@ -69,6 +69,7 @@ class AppConst:
     SEPARATOR_PATH = "/"
 
     SESSION_CURRENT_FOLDER_KEY = "current_folder"
+    SESSION_CURRENT_SEETHRU_KEY = "current_seethru"
 
 
 # Helpers

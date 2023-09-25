@@ -1,4 +1,4 @@
-from flask import Blueprint, session, render_template, request, redirect, url_for
+from flask import Blueprint, jsonify, session, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 
 from .services.ingest_service import *
@@ -20,11 +20,14 @@ def open_folder(folder_id: int):
     # TODO: handle non-folder id
 
     session[AppConst.SESSION_CURRENT_FOLDER_KEY] = folder_id
+    current_seethru = session[AppConst.SESSION_CURRENT_SEETHRU_KEY]
+
     return render_template("files.html", user=current_user,
                            browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
-                           folder_content=get_rendered_folder_content(folder_id),
+                           folder_content=get_rendered_folder_content(folder_id, seethru=current_seethru),
                            popup=render_template("popup.html"),
-                           rightclick_menu=render_template("rightclick_menu.html"))
+                           rightclick_menu=render_template("rightclick_menu.html"),
+                           seethru=render_template("seethru.html", current_seethru=current_seethru))
 
 @files.route("/files/folder/create/<int:mother_id>", methods=["POST"])
 @login_required
@@ -125,6 +128,15 @@ def delete_document(doc_id):
 
     return open_current_folder_redirect()
 
+@files.route("/seethru", methods=["POST"])
+@login_required
+def set_seethru():
+    isActive = request.form.get("isActive") in ["true", "True"]
+    session[AppConst.SESSION_CURRENT_SEETHRU_KEY] = isActive
+    print(f"Seethru is set to: {isActive}")
+    
+    return jsonify(redirect=True, redirect_url=url_for("files.open_folder", folder_id=session[AppConst.SESSION_CURRENT_FOLDER_KEY]))
+
 # Public functions
 
 def open_current_folder_redirect():
@@ -139,7 +151,7 @@ def get_rendered_browser_tree(root_id: int) -> str:
     """
     return get_document_tree(root_id, 
                              filtered_doctypes=[Document.Const.DOCTYPE_FOLDER], 
-                             seethru=True).render_tree()
+                             seethru=True,).render_tree()
 
 def get_document_tree(root_id: int, filtered_doctypes=[], seethru=False) -> DocumentTree:
     """

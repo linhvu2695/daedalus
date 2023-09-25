@@ -64,3 +64,30 @@ function handleRightClickEvent (event, contextMenu)
     });
 }
 
+// Seethru
+$(document).ready(function () {
+    var toggler = $("#seethru-toggle-btn");
+    
+    toggler.click(function () {
+        // Toggle the 'active' class on the toggler UI
+        toggler.toggleClass('active');
+
+        var isActive = toggler.hasClass('active');
+
+        // Make an AJAX request to set the session variable
+        $.ajax({
+            type: 'POST', 
+            url: '/seethru', 
+            data: { isActive: isActive }, 
+            success: function (response) {
+                console.log('Session seethru set successfully');
+                if (response.redirect) {
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function (error) {
+                console.error('Error setting session seethru:', error);
+            }
+        });
+    });
+});

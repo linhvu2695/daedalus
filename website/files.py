@@ -52,15 +52,28 @@ def create_subfolder(mother_id):
 @files.route("/files/doc/update/<int:doc_id>", methods=["POST"])
 @login_required
 def update_document(doc_id):
-    new_title = request.form.get(Document.Const.FIELD_TITLE)
-
     document = Document.query.get(doc_id)
 
     if (document):
-        if (new_title):
-            document.title = new_title
+        for key, value in list(request.form.items()):
+            if key == Document.Const.FIELD_TITLE:
+                # rename
+                document.title = value
+                continue
+            if key == Document.Const.FIELD_MOTHER:
+                mother_id = int(value)
+                mother_folder = Document.query.get(mother_id)
+                if (mother_folder and mother_folder.doctype == Document.Const.DOCTYPE_FOLDER):
+                    document.mother = mother_id
+                    document.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(document.id)
+                    if _is_ajax_request(request):
+                        db.session.commit()
+                        return jsonify(redirect=True, 
+                                    redirect_url=url_for("files.open_folder", 
+                                                            folder_id=session[AppConst.SESSION_CURRENT_FOLDER_KEY]))
+                continue
 
-    db.session.commit()
+        db.session.commit()
     print(f"Document {doc_id} updated.")
 
     # Reindex document
@@ -68,7 +81,7 @@ def update_document(doc_id):
 
     return open_current_folder_redirect()
 
-@files.route("files/doc/upload/<int:mother_id>", methods=["POST"])
+@files.route("/files/doc/upload/<int:mother_id>", methods=["POST"])
 @login_required
 def upload_document(mother_id):
     uploaded_files = request.files.getlist("content")
@@ -267,3 +280,6 @@ def _extract_types(mimetype: str) -> (str, str):
     doctype = parts[0].strip()
     subtype = parts[1].strip()
     return doctype, subtype
+
+def _is_ajax_request(request):
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"

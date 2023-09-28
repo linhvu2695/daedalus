@@ -11,6 +11,8 @@ browserItems.forEach(function (browserItem) {
     browserItem.addEventListener("contextmenu", e => {
         handleRightClickEvent(e, folderContextMenu)
     })
+
+    addDragDropEvents(browserItem);
 })
 
 folderItemViewers.forEach(function (folderItemViewer) {
@@ -31,6 +33,15 @@ folderItemViewers.forEach(function (folderItemViewer) {
 documentItemViewers.forEach(function (documentItemViewer) {
     documentItemViewer.addEventListener("contextmenu", e => {
         handleRightClickEvent(e, documentContextMenu)
+    })
+
+    documentItemViewer.addEventListener("dragstart", e => {
+        e.currentTarget.style.opacity = 0.5;
+        e.dataTransfer.setData('document-id', e.currentTarget.getAttribute('document-id'))
+    })
+
+    documentItemViewer.addEventListener("dragend", e => {
+        e.currentTarget.style.opacity = 1;
     })
 })
 
@@ -62,6 +73,42 @@ function handleRightClickEvent (event, contextMenu)
         rightclickItem.setAttribute("document-id", event.currentTarget.getAttribute("document-id"));
         rightclickItem.setAttribute("document-title", event.currentTarget.getAttribute("document-title"));
     });
+}
+
+function addDragDropEvents (element) 
+{
+    element.addEventListener("dragover", e => {
+        e.preventDefault();
+        element.classList.add("drag-over");
+    })
+
+    element.addEventListener("dragleave", () => {
+        element.classList.remove("drag-over");
+    })
+
+    element.addEventListener("drop", e => {
+        e.preventDefault();
+        element.classList.remove("drag-over");
+        documentId = e.dataTransfer.getData('document-id')
+        if (documentId) {
+            console.log(`Moving ${documentId} to ${element.getAttribute('document-id')}`)
+
+            $.ajax({
+                type: 'POST',
+                url: `/files/doc/update/${documentId}`,
+                data: { 'mother': element.getAttribute('document-id')},
+                success: function (response) {
+                    console.log(`Moved ${e.dataTransfer.getData('document-title')} to folder ${element.getAttribute('document-title')}`);
+                    if (response.redirect) {
+                        window.location.href = response.redirect_url;
+                    }
+                },
+                error: function (error) {
+                    console.error('Unable to move document', error);
+                }
+            });
+        }
+    })
 }
 
 // Seethru

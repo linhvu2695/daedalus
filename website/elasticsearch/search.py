@@ -47,6 +47,14 @@ class ESQueryBuilder:
         }
         self.query["query"]["bool"]["must"].append(term_query)
 
+    def add_prefix(self, field, value):
+        term_query = {
+            "prefix": {
+                field: value
+            }
+        }
+        self.query["query"]["bool"]["must"].append(term_query)
+
     def set_retrieve_id_only(self):
         self.query["_source"] = False
 
@@ -64,3 +72,6 @@ class ESQueryResponse:
         self.time_taken     = (int)     (response.get("took", 0))
         self.count          = (int)     (response["hits"]["total"]["value"])
         self.hits           =           response["hits"]["hits"]
+
+    def get_ids(self) -> list[int]:
+        return [int(hit["_id"]) for hit in self.hits]

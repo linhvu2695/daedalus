@@ -52,6 +52,7 @@ class Document(db.Model):
         INDEXED_FIELD_EXTENSION = "EXTENSION_STRING_INDEXED"
         INDEXED_FIELD_MOTHER = "MOTHER_STRING_INDEXED"
         INDEXED_FIELD_BINNED = "BINNED_BOOLEAN_INDEXED"
+        INDEXED_LINEAGE_PATH = "LINEAGEPATH_STRING_INDEXED"
 
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"
@@ -73,4 +74,5 @@ class Document(db.Model):
             self.Const.INDEXED_FIELD_EXTENSION: self.extension,
             self.Const.INDEXED_FIELD_MOTHER: self.mother,
             self.Const.INDEXED_FIELD_BINNED: self.binned,
+            self.Const.INDEXED_LINEAGE_PATH: self.lineage_path,
         }

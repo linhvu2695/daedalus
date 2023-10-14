@@ -20,17 +20,11 @@ def open_folder(folder_id: int):
     # TODO: handle non-folder id
 
     session[AppConst.SESSION_CURRENT_FOLDER_KEY] = folder_id
-    current_seethru = session[AppConst.SESSION_CURRENT_SEETHRU_KEY]
 
     folder = Document.query.get(folder_id)
-    documents = get_all_descendants_document(folder_id, seethru=current_seethru)
+    documents = get_all_descendants_document(folder_id, session.get(AppConst.SESSION_CURRENT_SEETHRU_KEY, False))
 
-    return render_template("files.html", user=current_user,
-                           browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
-                           asset_view=get_rendered_asset_view(documents, folder),
-                           popup=render_template("popup.html"),
-                           rightclick_menu=render_template("rightclick_menu.html"),
-                           seethru=render_template("seethru.html", current_seethru=current_seethru))
+    return get_rendered_files(documents, folder)
 
 @files.route("/files/folder/create/<int:mother_id>", methods=["POST"])
 @login_required
@@ -161,8 +155,10 @@ def freetext_search(folder_id):
 
     print (f"Search term: {term}")
 
+    folder = Document.query.get(folder_id)
+
     builder = search.ESQueryBuilder()
-    builder.add_term(Document.Const.INDEXED_FIELD_MOTHER, folder_id)
+    builder.add_prefix(Document.Const.INDEXED_LINEAGE_PATH, folder.lineage_path)
     builder.add_wildcard(Document.Const.INDEXED_FIELD_TITLE, term)
     builder.set_retrieve_id_only()
 
@@ -171,10 +167,14 @@ def freetext_search(folder_id):
 
     response = search.ESQueryResponse(es.search(index=current_app.config[AppConst.CONFIG_ELASTICSEARCH_INDEX_NAME], body=query))
     print(f"Amount of matching results: {response.count}")
-    if (response.count > 0):
-        print(response.hits)
+    print(f"Matching document ids: {response.get_ids()}")
 
-    return open_current_folder_redirect()
+    documents = []
+    folder = Document.query.get(session[AppConst.SESSION_CURRENT_FOLDER_KEY])
+    if (response.count > 0):
+        documents = Document.query.filter(Document.id.in_(response.get_ids())).all()
+
+    return get_rendered_files(documents, folder)
 
 # Public functions
 
@@ -267,6 +267,21 @@ def get_all_descendants_document(folder_id: int, seethru=False) -> list[Document
     """
     document_tree = get_document_tree(folder_id, seethru=seethru)
     return _get_all_descendants_document(document_tree.root)
+
+def get_rendered_files(documents: list[Document], folder):
+    """
+    Get the rendered HTML of the files.
+
+    Parameters:
+        documents: list of documents to be displayed in asset view
+        folder: should be the current folder
+    """
+    return render_template("files.html", user=current_user,
+                           browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
+                           asset_view=get_rendered_asset_view(documents, folder),
+                           popup=render_template("popup.html"),
+                           rightclick_menu=render_template("rightclick_menu.html"),
+                           seethru=render_template("seethru.html", current_seethru=session.get(AppConst.SESSION_CURRENT_SEETHRU_KEY, False)))
 
 # Private functions
 

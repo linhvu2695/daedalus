@@ -22,9 +22,12 @@ def open_folder(folder_id: int):
     session[AppConst.SESSION_CURRENT_FOLDER_KEY] = folder_id
     current_seethru = session[AppConst.SESSION_CURRENT_SEETHRU_KEY]
 
+    folder = Document.query.get(folder_id)
+    documents = get_all_descendants_document(folder_id, seethru=current_seethru)
+
     return render_template("files.html", user=current_user,
                            browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
-                           folder_content=get_rendered_folder_content(folder_id, seethru=current_seethru),
+                           asset_view=get_rendered_asset_view(documents, folder),
                            popup=render_template("popup.html"),
                            rightclick_menu=render_template("rightclick_menu.html"),
                            seethru=render_template("seethru.html", current_seethru=current_seethru))
@@ -224,19 +227,15 @@ def get_document_tree(root_id: int, filtered_doctypes=[], seethru=False) -> Docu
 
     return doc_tree
 
-def get_rendered_folder_content(folder_id: int, seethru=False) -> str:
+def get_rendered_asset_view(documents: list[Document], folder) -> str:
     """
-    Get the rendered HTML of the folder content
+    Get the rendered HTML of the asset view
 
     Parameters:
-        folder_id (int): Folder ID 
-        seethru (bool, optional): If the value is False, only retrieve direct children of the folder
+        documents: list of documents to be displayed
     """
-    folder = Document.query.get(folder_id)
-    documents = get_all_descendants_document(folder_id, seethru=seethru)
-    
-    return render_template("folder_content.html", 
-                           folder=folder, 
+    return render_template("asset_view.html", 
+                           folder=folder,
                            documents=documents, 
                            breadcrumb=get_rendered_breadcrumb(folder.lineage_path))
 

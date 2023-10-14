@@ -70,7 +70,7 @@
   overflow-y: auto;
 }
 
-#folder-content {
+#asset-view {
     position: fixed;
     left: 312px;
     height: 100%;

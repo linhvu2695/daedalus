@@ -254,3 +254,20 @@
 .toggle-btn.active .inner-circle {
   margin-left: 25px;
 }
+
+/* Freetext Search */
+.search-box {
+  margin-bottom: 5px;
+}
+
+.search-box label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.search-box #term {
+  padding: 4px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

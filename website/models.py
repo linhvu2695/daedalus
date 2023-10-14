@@ -50,6 +50,7 @@ class Document(db.Model):
         INDEXED_FIELD_SUBTYPE = "SUBTYPE_STRING_INDEXED"
         INDEXED_FIELD_ORIGINAL_FILENAME = "ORIGINALFILENAME_STRING_INDEXED"
         INDEXED_FIELD_EXTENSION = "EXTENSION_STRING_INDEXED"
+        INDEXED_FIELD_MOTHER = "MOTHER_STRING_INDEXED"
         INDEXED_FIELD_BINNED = "BINNED_BOOLEAN_INDEXED"
 
         DOCTYPE_FOLDER = "folder"
@@ -70,5 +71,6 @@ class Document(db.Model):
             self.Const.INDEXED_FIELD_SUBTYPE: self.subtype,
             self.Const.INDEXED_FIELD_ORIGINAL_FILENAME: self.original_filename,
             self.Const.INDEXED_FIELD_EXTENSION: self.extension,
+            self.Const.INDEXED_FIELD_MOTHER: self.mother,
             self.Const.INDEXED_FIELD_BINNED: self.binned,
         }

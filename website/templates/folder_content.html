@@ -1,5 +1,10 @@
 {{breadcrumb | safe}}
 
+<form id="freetextSearch" action="/files/folder/{{folder.id}}/freetext" class="search-box" method="GET">
+    <label for="freetextSearch">Search:</label>
+    <input type="text" id="term" name="term" placeholder="Enter your search term">
+</form>
+
 <div class="item-grid">
     {% for doc in documents %}
     <div class="item-viewer 

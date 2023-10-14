@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, session, render_template, request, redirec
 from flask_login import login_required, current_user
 
 from .services.ingest_service import *
-from . import db, AppConst
+from . import db, es, AppConst
 from .models import Document
 from .structure.document import *
 from .elasticsearch import search, index
@@ -61,6 +61,7 @@ def update_document(doc_id):
                 document.title = value
                 continue
             if key == Document.Const.FIELD_MOTHER:
+                # move
                 mother_id = int(value)
                 mother_folder = Document.query.get(mother_id)
                 if (mother_folder and mother_folder.doctype == Document.Const.DOCTYPE_FOLDER):
@@ -149,6 +150,28 @@ def set_seethru():
     print(f"Seethru is set to: {isActive}")
     
     return jsonify(redirect=True, redirect_url=url_for("files.open_folder", folder_id=session[AppConst.SESSION_CURRENT_FOLDER_KEY]))
+
+@files.route("/files/folder/<int:folder_id>/freetext")
+@login_required
+def freetext_search(folder_id):
+    term = request.args.get("term")
+
+    print (f"Search term: {term}")
+
+    builder = search.ESQueryBuilder()
+    builder.add_term(Document.Const.INDEXED_FIELD_MOTHER, folder_id)
+    builder.add_wildcard(Document.Const.INDEXED_FIELD_TITLE, term)
+    builder.set_retrieve_id_only()
+
+    query = builder.build()
+    print(f"Search query: {query}")
+
+    response = search.ESQueryResponse(es.search(index=current_app.config[AppConst.CONFIG_ELASTICSEARCH_INDEX_NAME], body=query))
+    print(f"Amount of matching results: {response.count}")
+    if (response.count > 0):
+        print(response.hits)
+
+    return open_current_folder_redirect()
 
 # Public functions
 

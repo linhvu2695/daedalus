@@ -1,3 +1,21 @@
+/* Image preview */
+#image-preview-container {
+  display: block;
+  border: 2px dashed #ccc;  
+  padding: 10px;
+  border-radius: 10px; 
+  width: 300px;  
+  height: 200px;  
+  margin-top: 20px;  
+  margin-bottom: 10px;
+}
+
+#preview-image {
+  max-width: 80%; 
+  max-height: 80%;  
+  border-radius: 8px; 
+}
+
 /* Popup */
 .popup-content {
   background: #ccc;
@@ -270,4 +288,25 @@
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+/* Charts */
+.bar-chart .bar-item {
+  display: block;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bar-chart .bar {
+  padding: 2px;
+  background: linear-gradient(to right, #AB47BC, #CE93D8);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 1);
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.bar-chart .label {
+  font-family: 'Courier New', Courier, monospace;
+  padding: 4px;
+  text-align: left;
 }

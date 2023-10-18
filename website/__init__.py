@@ -25,9 +25,10 @@ def create_app():
     from .files import files
     from .buffer import buffer
     from .jobs import jobs
+    from .icarus import icarus
     from .elasticsearch.index import index
 
-    for blueprint in [views, auth, upload, files, buffer, jobs, index]:
+    for blueprint in [views, auth, upload, files, buffer, jobs, icarus, index]:
         app.register_blueprint(blueprint=blueprint, url_prefix="/")
 
     # Database management

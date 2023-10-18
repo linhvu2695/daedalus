@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Icarus{% endblock %}
+
+{%block content%}
+<br />
+<h1>Icarus</h1>
+<br/>
+
+<br />
+<h2>Zero-shot image classification</h2>
+<br/>
+
+<p>Zero-shot image classification refers to the ability of a model to classify images into categories it has never seen during training. In traditional image classification, a model is trained on a specific set of classes, and during inference, it can only classify images into those predefined classes. However, zero-shot learning allows a model to generalize to new classes without the need for specific training examples.</p>
+<br>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="/icarus/generate" method="post" enctype="multipart/form-data" id="image-form">
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image" accept="image/*" required id="image-input" required>
+    <br>
+
+    <div id="image-preview-container" style="display: block;">
+        <h6>Selected Image:</h6>
+        {% if image %}
+            <img id="preview-image" src="data:image/jpeg;base64,{{ image }}" alt="Selected Image">
+        {% else %}
+            <img id="preview-image">
+        {% endif %}
+        <img id="preview-image">
+    </div>
+
+    <label for="labels">Possible class names (comma-separated):</label>
+    <input type="text" name="labels" placeholder="Labels" size="50" required>
+    <br>
+
+    <button type="submit" class="btn btn-primary">Compute</button>
+</form>
+
+<br>
+
+{% if label %}
+    <h6>Computed label: <strong>{{label}}</strong></h6>
+
+    <div class="bar-chart">
+        {% for bar_label, value in label_props.items() %}
+            <div class="bar-item">
+                <div class="label">{{ bar_label }} ({{ value|round(2) }}%)</div>
+                <div class="bar" style="width: {{ (value*100)|round|int }}%;"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<script src="/static/imagePreview.js"></script>
+
+{%endblock%}

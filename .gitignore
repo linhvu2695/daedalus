@@ -1,4 +1,6 @@
 .vscode
+.DS_Store
+venv
 instance
 storage
 __pycache__

@@ -290,7 +290,8 @@ def get_rendered_files(documents: list[Document], folder):
     return render_template("files.html", user=current_user,
                            browser_tree=get_rendered_browser_tree(AppConst.DEFAULT_STORAGE_ID),
                            asset_view=get_rendered_asset_view(documents, folder),
-                           popup=render_template("popup.html"),
+                           popup=render_template("popup/popup.html"),
+                           detail_popup=render_template("popup/detail_popup.html"),
                            rightclick_menu=render_template("rightclick_menu.html"),
                            seethru=render_template("seethru.html", current_seethru=session.get(AppConst.SESSION_CURRENT_SEETHRU_KEY, False)))
 

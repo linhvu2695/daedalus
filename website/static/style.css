@@ -192,7 +192,7 @@
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
   grid-gap: 10px;
   margin-right: 10px;
-  height: 670px;
+  max-height: 670px;
   overflow-x: hidden;
   overflow-y: auto;
 }

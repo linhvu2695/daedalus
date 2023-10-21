@@ -59,6 +59,9 @@ class Document(db.Model):
 
         SUBTYPE_STANDARD_IMAGE = "standard image"
 
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
     def to_index_dict(self):
         """
         Convert the Document object to a dictionary.

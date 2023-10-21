@@ -14,6 +14,14 @@ files = Blueprint("files", __name__)
 def files_explore():
     return redirect(url_for("files.open_folder", folder_id=AppConst.DEFAULT_STORAGE_ID))
 
+@files.route("/files/doc/detail/<int:doc_id>")
+@login_required
+def detail_document(doc_id: int):
+    if(_is_ajax_request(request)):
+        document = Document.query.get(doc_id)
+
+        return jsonify(document.to_dict())
+
 @files.route("/files/folder/<int:folder_id>")
 @login_required
 def open_folder(folder_id: int):
@@ -28,7 +36,7 @@ def open_folder(folder_id: int):
 
 @files.route("/files/folder/create/<int:mother_id>", methods=["POST"])
 @login_required
-def create_subfolder(mother_id):
+def create_subfolder(mother_id: int):
     new_subfolder = Document(title=request.form.get(Document.Const.FIELD_TITLE),
                              doctype=Document.Const.DOCTYPE_FOLDER,
                              mother=mother_id)
@@ -48,7 +56,7 @@ def create_subfolder(mother_id):
 
 @files.route("/files/doc/update/<int:doc_id>", methods=["POST"])
 @login_required
-def update_document(doc_id):
+def update_document(doc_id: int):
     document = Document.query.get(doc_id)
 
     if (document):
@@ -81,7 +89,7 @@ def update_document(doc_id):
 
 @files.route("/files/doc/upload/<int:mother_id>", methods=["POST"])
 @login_required
-def upload_document(mother_id):
+def upload_document(mother_id: int):
     uploaded_files = request.files.getlist("content")
 
     for file in uploaded_files:
@@ -97,7 +105,7 @@ def upload_document(mother_id):
 
 @files.route("/files/folder/delete/<int:folder_id>", methods=["POST"])
 @login_required
-def delete_folder(folder_id):
+def delete_folder(folder_id: int):
     children_query = Document.query.filter_by(mother=folder_id, binned=False)
 
     # Delete all children documents
@@ -124,7 +132,7 @@ def delete_folder(folder_id):
 
 @files.route("files/doc/delete/<int:doc_id>", methods=["POST"])
 @login_required
-def delete_document(doc_id):
+def delete_document(doc_id: int):
     doc = Document.query.get(doc_id)
     if (doc):
         if (doc.doctype == Document.Const.DOCTYPE_FOLDER):
@@ -150,7 +158,7 @@ def set_seethru():
 
 @files.route("/files/folder/<int:folder_id>/freetext")
 @login_required
-def freetext_search(folder_id):
+def freetext_search(folder_id: int):
     term = request.args.get("term")
 
     print (f"Search term: {term}")
@@ -158,7 +166,10 @@ def freetext_search(folder_id):
     folder = Document.query.get(folder_id)
 
     builder = search.ESQueryBuilder()
-    builder.add_prefix(Document.Const.INDEXED_LINEAGE_PATH, folder.lineage_path)
+    if (session.get(AppConst.SESSION_CURRENT_SEETHRU_KEY, False)):
+        builder.add_term(Document.Const.INDEXED_LINEAGE_PATH, folder_id)
+    else:
+        builder.add_term(Document.Const.INDEXED_FIELD_MOTHER, folder_id)
     builder.add_wildcard(Document.Const.INDEXED_FIELD_TITLE, term)
     builder.set_retrieve_id_only()
 
@@ -318,5 +329,9 @@ def _extract_types(mimetype: str) -> (str, str):
     subtype = parts[1].strip()
     return doctype, subtype
 
-def _is_ajax_request(request):
+def _is_ajax_request(request) -> bool:
     return request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+def _extract_ancestor_ids(lineage_path: str) -> list[int]:
+    if (len(lineage_path) == 0): return None
+    return [int(num) for num in lineage_path.split('/')]

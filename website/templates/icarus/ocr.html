@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Icarus{% endblock %}
+
+{%block content%}
+<br />
+<h1>Icarus</h1>
+<br/>
+
+<br />
+<h2>Optical Character Recognition (OCR)</h2>
+<br/>
+
+<p>Tesseract is a highly accurate OCR engine that has been developed by Google. It is capable of recognizing text in various languages and works with images in different formats.</p>
+<br>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="/icarus/OCR/generate" method="post" enctype="multipart/form-data" id="image-form">
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image" accept="image/*" required id="image-input" required>
+    <br>
+
+    <div id="image-preview-container" style="display: block;">
+        <h6>Selected Image:</h6>
+        {% if image %}
+            <img id="preview-image" src="data:image/jpeg;base64,{{ image }}" alt="Selected Image">
+        {% else %}
+            <img id="preview-image">
+        {% endif %}
+        <img id="preview-image">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Compute</button>
+</form>
+
+<br>
+
+<script src="/static/imagePreview.js"></script>
+
+{%endblock%}

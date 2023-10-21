@@ -11,3 +11,6 @@ CONFIG_STORAGE_PATH = "/Users/vlinh/Code/personal/projects/daedalus/storage"
 ELASTICSEARCH_HOST = "localhost"  
 ELASTICSEARCH_PORT = 9200  
 ELASTICSEARCH_INDEX_NAME = "ariadne"
+
+# Hugging Face
+HUGGINGFACE_API_KEY = "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"

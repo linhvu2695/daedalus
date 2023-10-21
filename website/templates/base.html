@@ -36,7 +36,15 @@
                 <a class="nav-item nav-link" id="home" href="/">Home</a>
                 <a class="nav-item nav-link" id="files" href="/files">Files</a>
                 <a class="nav-item nav-link" id="files" href="/jobs">Jobs</a>
-                <a class="nav-item nav-link" id="files" href="/icarus">Icarus</a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="icarusDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Icarus
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="icarusDropdown">
+                        <a class="dropdown-item" href="/icarus/ZeroShotClassification">Zero-shot</a>
+                        <a class="dropdown-item" href="/icarus/OCR">OCR</a>
+                    </div>
+                </div>
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                 {%else%}
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>

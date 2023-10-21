@@ -12,3 +12,9 @@ docker run -d --name elasticsearch \
   -e "discovery.type=single-node" \
   docker.elastic.co/elasticsearch/elasticsearch:7.14.1
 ```
+
+## Setup Icarus
+Icarus is the hub for AI services. Some services require certain installations on the hosting server:
+- OCR: `brew install tesseract`
+
+![Alt text](icarus-zero-shot-image-classification.png)

@@ -14,8 +14,9 @@ icarus = Blueprint("icarus", __name__)
 # Zeroshot models
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
+ocr_container_path = "/ocr"
 
-@icarus.route("/icarus/ZeroShotClassification")
+@icarus.route("/icarus/ZeroShot")
 @login_required
 def zeroshot_explore():
     return render_template("icarus/zeroshot.html", user=current_user)
@@ -25,7 +26,7 @@ def zeroshot_explore():
 def ocr_explore():
     return render_template("icarus/ocr.html", user=current_user)
 
-@icarus.route("/icarus/ZeroShotClassification/generate", methods=["POST"])
+@icarus.route("/icarus/ZeroShot/generate", methods=["POST"])
 @login_required
 def zeroshot_generate():
     if 'image' not in request.files:
@@ -66,21 +67,48 @@ def ocr_generate():
 
     # Perform OCR on the uploaded image
     data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
-    print(data)
+    print(str(data))
 
-    # Create a drawing object to add bounding boxes to the image
+    # Create a drawing object to add bounding boxes & text labels to the image
     draw = ImageDraw.Draw(image)
+    text_data = {} # text data is structured in 4 levels of block - paragraph - line - word
+    text_to_render = [] # block - paragraph
 
     for i in range(len(data['text'])):
-        word = data['text'][i]
-        conf = int(data['conf'][i])
+        block_num   = int(data['block_num'][i])
+        par_num     = int(data['par_num'][i])
+        line_num    = int(data['line_num'][i])
+        word_num    = int(data['word_num'][i])
+        word        = str(data['text'][i])
+        conf        = int(data['conf'][i])
         x, y, w, h = int(data['left'][i]), int(data['top'][i]), int(data['width'][i]), int(data['height'][i])
 
-        # Draw a rectangle around each word
-        draw.rectangle([x, y, x + w, y + h], outline="green", width=2)
+        draw.rectangle([x, y, x + w, y + h], outline=(0, 255, 0), width=2)
 
-    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH]
-    image.save(path.join(container_path, 'test_ocr.jpg'))
+        if conf > 90 and len(word) > 0 and not word.isspace():
+            label = f"{word} ({conf})"
+            draw.text((x, y - 10), label, fill=(0, 255, 0), font=None, size=16, encoding="utf-8")
+
+            if not (block_num in text_data.keys()):
+                text_data[block_num] = {}
+            if not (par_num in text_data[block_num].keys()):
+                text_data[block_num][par_num] = {}
+            if not (line_num in text_data[block_num][par_num].keys()):
+                text_data[block_num][par_num][line_num] = ""
+            text_data[block_num][par_num][line_num] += (" " + word)
+
+    print(text_data)
+    for block in sorted(text_data.keys()):
+        for par in sorted(text_data[block].keys()):
+            text_to_render.append("")
+            for line in sorted(text_data[block][par].keys()):
+                text_to_render[-1] += (text_data[block][par][line] + "\n")
+    print(text_to_render)
+
+    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + ocr_container_path
+    result_image_path = path.join(container_path, 'ocr_result.jpg')
+    image.save(result_image_path)
     
 
-    return render_template('icarus/ocr.html', user=current_user)
+    return render_template('icarus/ocr.html', user=current_user, 
+                           result_image_path=result_image_path, text_to_render=text_to_render)

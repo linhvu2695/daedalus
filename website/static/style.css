@@ -333,3 +333,15 @@
 #detail-popup #document-metadata {
   flex: 1;
 }
+
+/* Icarus */
+.processed-image img {
+  max-width: 800px;
+  max-height: 600px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.processed-text {
+  background-color: #f2f2f2;
+}

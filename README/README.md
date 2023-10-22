@@ -17,4 +17,5 @@ docker run -d --name elasticsearch \
 Icarus is the hub for AI services. Some services require certain installations on the hosting server:
 - OCR: `brew install tesseract`
 
-![Alt text](icarus-zero-shot-image-classification.png)
+![Alt text](icarus-zero-shot.png)
+![Alt text](icarus-ocr.png)

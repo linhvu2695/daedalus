@@ -37,6 +37,21 @@
 
 <br>
 
+{% if result_image_path %}
+<div class="processed-image">
+    <img src="/buffer/{{result_image_path}}">
+</div>
+{% endif %}
+
+{% if text_to_render%}
+<h6>Recognized text:</h6>
+<div class="processed-text">
+        {% for paragraph in text_to_render %}
+            <p>{{paragraph}}</p>
+        {% endfor %}
+</div>
+{% endif %}
+
 <script src="/static/imagePreview.js"></script>
 
 {%endblock%}

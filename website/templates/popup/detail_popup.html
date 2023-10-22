@@ -6,8 +6,17 @@
     
     <div id="document-image"></div>
     <br>
-    <div id="document-metadata">
-        <p><strong>Create Date:</strong> <span id="createdate-metadata"></span></p>
-        <p><strong>Doctype:</strong> <span id="doctype-metadata"></span></p>
-    </div>
+
+    <form action="/files/doc/update/{document-id}" method="POST" id="popup-form">
+        <div id="document-metadata">
+            <p><strong>ID:</strong> <span id="id-metadata" name="id"></span></p>
+            <p><strong>Create Date:</strong> <span id="createdate-metadata" name="createdate"></span></p>
+            <p><strong>Doctype:</strong> <span id="doctype-metadata" name="doctype"></span></p>
+            <p><strong>Description:</strong> <br>
+                <textarea id="description-metadata" name="description" style="background-color: #d3d3d3;" readonly></textarea></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="save-btn" disabled>Save</button> 
+        <button type="button" class="btn btn-primary" id="edit-btn" onclick="toggleEditMode()">Edit</button>
+    </form>
 </div>

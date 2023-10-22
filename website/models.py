@@ -28,6 +28,7 @@ class Document(db.Model):
     original_filename = db.Column(db.String(1000))
     extension = db.Column(db.String(20))
     lineage_path = db.Column(db.String(10000))
+    description = db.Column(db.String(10000))
 
     class Const:
         FIELD_ID = "id"
@@ -41,6 +42,7 @@ class Document(db.Model):
         FIELD_ORIGINAL_FILENAME = "original_filename"
         FIELD_EXTENSION = "extension"
         FIELD_LINEAGE_PATH = "lineage_path"
+        FIELD_DESCRIPTION = "description"
 
         INDEXED_FIELD_ID = "ID_STRING_INDEXED"
         INDEXED_FIELD_TITLE = "TITLE_TEXT_INDEXED"
@@ -52,7 +54,8 @@ class Document(db.Model):
         INDEXED_FIELD_EXTENSION = "EXTENSION_STRING_INDEXED"
         INDEXED_FIELD_MOTHER = "MOTHER_STRING_INDEXED"
         INDEXED_FIELD_BINNED = "BINNED_BOOLEAN_INDEXED"
-        INDEXED_LINEAGE_PATH = "LINEAGEPATH_STRING_INDEXED"
+        INDEXED_FIELD_LINEAGE_PATH = "LINEAGEPATH_STRING_INDEXED"
+        INDEXED_FIELD_DESCRIPTION = "DESCRIPTION_TEXT_INDEXED"
 
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"
@@ -77,5 +80,6 @@ class Document(db.Model):
             self.Const.INDEXED_FIELD_EXTENSION: self.extension,
             self.Const.INDEXED_FIELD_MOTHER: self.mother,
             self.Const.INDEXED_FIELD_BINNED: self.binned,
-            self.Const.INDEXED_LINEAGE_PATH: self.lineage_path,
+            self.Const.INDEXED_FIELD_LINEAGE_PATH: self.lineage_path,
+            self.Const.INDEXED_FIELD_DESCRIPTION: self.description,
         }

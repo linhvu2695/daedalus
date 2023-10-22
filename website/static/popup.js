@@ -60,38 +60,41 @@ function addEventOpenPopup(element, type) {
                     $('#document-image').empty().append(imgElement);
 
                     // Populate information in the metadata panel
+                    $('#id-metadata').text(response.id);
                     $('#createdate-metadata').text(response.create_date);
                     $('#doctype-metadata').text(response.doctype);
+                    $('#description-metadata').val(response.description);
                 },
                 error: function (error) {
                     console.error('Unable to see document detail', error);
                 }
             });
         }
-        // Handle popup by JS only
-        else
+
+        // Fill popup Form action with url
+        switch (popupId)
         {
-            switch (popupId)
-            {
-                case "create-subfolder-popup":
-                    popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
-                    break;
-                case "rename-popup":
-                    popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
-                    break;
-                case "delete-folder-popup":
-                    popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
-                    break;
-                case "upload-popup":
-                    popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
-                    break;
-                case "delete-document-popup":
-                    popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
-                    break;
-                case "reindex-popup":
-                    popup.querySelector("#popup-form").action = "/index/doc/" + documentId;
-                    break;
-            }
+            case "detail-popup":
+                popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
+                break;
+            case "create-subfolder-popup":
+                popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
+                break;
+            case "rename-popup":
+                popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
+                break;
+            case "delete-folder-popup":
+                popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
+                break;
+            case "upload-popup":
+                popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
+                break;
+            case "delete-document-popup":
+                popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
+                break;
+            case "reindex-popup":
+                popup.querySelector("#popup-form").action = "/index/doc/" + documentId;
+                break;
         }
 
         popup.classList.remove("hidden-popup");
@@ -106,3 +109,20 @@ function closePopupFunction() {
     });
     blurBg.classList.add("hidden-blur");
 };
+
+function toggleEditMode() {
+    var descriptionMetadata = document.getElementById('description-metadata');
+    var saveButton = document.getElementById('save-btn');
+
+    if (saveButton.hasAttribute('disabled')) {
+        // Enable edit mode
+        saveButton.removeAttribute('disabled');
+        descriptionMetadata.removeAttribute('readonly');        
+        descriptionMetadata.style.backgroundColor = '';
+    } else {
+        // Disable edit mode
+        descriptionMetadata.setAttribute('readonly', 'readonly');
+        saveButton.setAttribute('disabled', 'disabled');
+        descriptionMetadata.style.backgroundColor = '#d3d3d3';
+    }
+}

@@ -314,6 +314,12 @@
 }
 
 /* Detail Popup */
+#detail-popup {
+  max-height: 900px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 #detail-popup #document-image {
   flex: 1;
   padding-right: 20px;

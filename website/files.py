@@ -59,6 +59,8 @@ def create_subfolder(mother_id: int):
 def update_document(doc_id: int):
     document = Document.query.get(doc_id)
 
+    print("Document metadata: " + str(request.form.to_dict()))
+
     if (document):
         for key, value in list(request.form.items()):
             if key == Document.Const.FIELD_TITLE:
@@ -74,10 +76,14 @@ def update_document(doc_id: int):
                     document.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(document.id)
                     if _is_ajax_request(request):
                         db.session.commit()
+                        index.index_document(document)
                         return jsonify(redirect=True, 
                                     redirect_url=url_for("files.open_folder", 
                                                             folder_id=session[AppConst.SESSION_CURRENT_FOLDER_KEY]))
                 continue
+            if key == Document.Const.FIELD_DESCRIPTION:
+                # edit description
+                document.description = value
 
         db.session.commit()
     print(f"Document {doc_id} updated.")

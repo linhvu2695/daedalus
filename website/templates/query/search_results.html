@@ -1,0 +1,22 @@
+<div>
+    <div class="result-line">
+        <table>
+            <thead>
+                <tr>
+                    {% for col in columns%}
+                        <th>{{col}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                    <tr>
+                        {% for col in columns%}
+                            <td>{{ result[col] }}</td>    
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

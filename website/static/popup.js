@@ -43,9 +43,12 @@ function addEventOpenPopup(element, type) {
         // Connect popup to menu-action
         let popup = document.getElementById(popupId);
 
-        popup.setAttribute("document-id", documentId);
-        popup.setAttribute("document-title", documentTitle);
-        popup.querySelector("#document-title").textContent = documentTitle;
+        if (documentId && documentTitle && popup.querySelector("#document-title"))
+        {
+            popup.setAttribute("document-id", documentId);
+            popup.setAttribute("document-title", documentTitle);
+            popup.querySelector("#document-title").textContent = documentTitle;
+        }
 
         // Handle popup by AJAX
         if (popupId == "detail-popup")

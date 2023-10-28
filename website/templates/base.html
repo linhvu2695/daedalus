@@ -35,12 +35,21 @@
                 {%if user.is_authenticated%}
                 <a class="nav-item nav-link" id="home" href="/">Home</a>
                 <a class="nav-item nav-link" id="files" href="/files">Files</a>
-                <a class="nav-item nav-link" id="files" href="/jobs">Jobs</a>
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="icarusDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="admin">
+                        <a class="dropdown-item" href="/jobs">Jobs</a>
+                        <a class="dropdown-item" href="/keywords">Keywords</a>
+                        <a class="dropdown-item" href="/keytypes">Keytypes</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="icarus" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Icarus
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="icarusDropdown">
+                    <div class="dropdown-menu" aria-labelledby="icarus">
                         <a class="dropdown-item" href="/icarus/ZeroShot">Zero-shot</a>
                         <a class="dropdown-item" href="/icarus/OCR">OCR</a>
                     </div>

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Keytypes{% endblock %}
+
+{%block content%}
+<br/>
+<h1>Keytypes</h1>
+<br/>
+
+{{query_create | safe}}
+
+{{query | safe}}
+
+<div class="blur-bg hidden-blur"></div>
+
+<script src="/static/popup.js"></script>
+<script src="/static/query.js"></script>
+{%endblock%}

@@ -167,8 +167,6 @@ def set_seethru():
 def freetext_search(folder_id: int):
     term = request.args.get("term")
 
-    print (f"Search term: {term}")
-
     folder = Document.query.get(folder_id)
 
     builder = search.ESQueryBuilder()

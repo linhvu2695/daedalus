@@ -334,6 +334,33 @@
   flex: 1;
 }
 
+/* Query */
+.query {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.query-input {
+  margin-right: 10px;
+}
+
+.result-line table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.result-line th, td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.result-line th {
+  background-color: #f2f2f2;
+}
+
 /* Icarus */
 .processed-image img {
   max-width: 800px;

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Keywords{% endblock %}
+
+{%block content%}
+<br />
+<h1>Keywords</h1>
+<br/>
+
+<form class="query" id="search-form">
+    <div class="freetext query-input">
+        <input type="text" id="freetext-term" name="freetext-term" placeholder="Enter your search term">
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+
+<script src="/static/query.js"></script>
+{%endblock%}

@@ -83,3 +83,13 @@ class Document(db.Model):
             self.Const.INDEXED_FIELD_LINEAGE_PATH: self.lineage_path,
             self.Const.INDEXED_FIELD_DESCRIPTION: self.description,
         }
+    
+class Keytype(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True)
+    create_date = db.Column(db.DateTime(timezone=True), default=func.now())
+
+    class Const:
+        FIELD_ID = "id"
+        FIELD_NAME = "name"
+        FIELD_CREATE_DATE = "create_date"

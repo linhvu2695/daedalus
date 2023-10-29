@@ -38,12 +38,14 @@ def keytypes_explore():
 def keytypes_search():
     freetext_term = request.args.get("freetext-term")
 
-    keytypes = Keytype.query.filter(Keytype.name.like(f"%{freetext_term}%")).all()
-    columns = Keytype.columns()
+    keytypes = Keytype.query.filter(Keytype.name.like(f"%{freetext_term}%")).filter_by(binned=False).all()
+    columns = [Keytype.Const.FIELD_ID,
+               Keytype.Const.FIELD_NAME,
+               Keytype.Const.FIELD_CREATE_DATE]
     results = []
 
     for keytype in keytypes:
-        results.append(keytype.to_dict())
+        results.append(keytype.to_dict(columns))
 
     results.sort(key=lambda x: x[Keytype.Const.FIELD_CREATE_DATE], reverse=True)
 
@@ -55,7 +57,7 @@ def keytypes_search():
 @login_required
 def keytypes_create():
     keytype_name = request.form.get(Keytype.Const.FIELD_NAME)
-    create_new_message = ""
+    create_message = ""
     success = False
 
     if (len(keytype_name) == 0):
@@ -65,14 +67,14 @@ def keytypes_create():
         new_keytype = Keytype(name=keytype_name)
         db.session.add(new_keytype)
         db.session.commit()
-        create_new_message = f"New keytype created: {new_keytype.name}."
+        create_message = f"New keytype created: {new_keytype.name}."
         success = True
     else:
-        create_new_message = f"Keytype {keytype_name} already existed."
+        create_message = f"Keytype {keytype_name} already existed."
         success = False
-    print(create_new_message)
+    print(create_message)
 
-    return jsonify(create_new_message=create_new_message, success=success)
+    return jsonify(create_message=create_message, success=success)
 
 @keytypes.route("/keytypes/detail/<int:id>")
 @login_required
@@ -81,3 +83,22 @@ def keytypes_detail(id: int):
         keytype = Keytype.query.get(id)
 
         return jsonify(keytype.to_dict())
+    
+@keytypes.route("/keytypes/delete/<int:id>", methods=["POST"])
+@login_required
+def keytypes_delete(id: int):
+    keytype = Keytype.query.get(id)
+    success = False
+    delete_message = ""
+
+    if (keytype):
+        keytype.binned = True
+        db.session.commit()
+        delete_message = f"Keytype {keytype.name} deleted successfully"
+        success = True
+    else:
+        delete_message = f"Keytype id {id} not found"
+        success = False
+
+    return jsonify({"success": success,
+                    "delete_message": delete_message})

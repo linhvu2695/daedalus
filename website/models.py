@@ -19,6 +19,14 @@ class Contact(db.Model, UserMixin):
     @staticmethod
     def columns() -> list[str]: 
         return [column.name for column in Contact.__table__.columns]
+    
+    def to_dict(self, filter=[]):
+        if len(filter) > 0:
+            columns = [column.name for column in self.__table__.columns if (column.name in filter)]
+        else:
+            columns = [column.name for column in self.__table__.columns]
+
+        return {column: getattr(self, column) for column in columns}
 
 class Document(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,8 +78,13 @@ class Document(db.Model):
     def columns() -> list[str]: 
         return [column.name for column in Document.__table__.columns]
 
-    def to_dict(self):
-        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+    def to_dict(self, filter=[]):
+        if len(filter) > 0:
+            columns = [column.name for column in self.__table__.columns if (column.name in filter)]
+        else:
+            columns = [column.name for column in self.__table__.columns]
+
+        return {column: getattr(self, column) for column in columns}
 
     def to_index_dict(self):
         """
@@ -96,15 +109,25 @@ class Keytype(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True)
     create_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    description = db.Column(db.String(10000))
+    binned = db.Column(db.Boolean, default=False)
 
     class Const:
         FIELD_ID = "id"
         FIELD_NAME = "name"
         FIELD_CREATE_DATE = "create_date"
+        FIELD_DESCRIPTION = "description"
+        FIELD_BINNED = "binned"
     
     @staticmethod
     def columns() -> list[str]: 
         return [column.name for column in Keytype.__table__.columns]
     
-    def to_dict(self):
-        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+    def to_dict(self, filter=[]):
+        if len(filter) > 0:
+            columns = [column.name for column in self.__table__.columns if (column.name in filter)]
+        else:
+            columns = [column.name for column in self.__table__.columns]
+
+        return {column: getattr(self, column) for column in columns}
+

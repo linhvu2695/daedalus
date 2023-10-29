@@ -43,7 +43,7 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 var createMessage = $("#create-message p");
-                createMessage.text(response["create_new_message"]);
+                createMessage.text(response["create_message"]);
                 if (!response["success"])
                 {
                     createMessage.css("color", "red");

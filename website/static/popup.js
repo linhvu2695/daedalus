@@ -149,11 +149,12 @@ function handleQueryItemPopup(element, popup) {
 function populateItemDetail(itemId, itemType) {
     $.ajax({
         type: 'GET',
-        url: `/${itemType}/detail/${itemId}`,
+        url: `/${itemType.toLowerCase()}/detail/${itemId}`,
         success: function (response) {
             console.log(response);
 
             // Populate information in the metadata panel
+            $("#item-type-metadata").text(itemType.toUpperCase());
             $('#id-metadata').text(response.id);
             $('#name-metadata').text(response.name);
             $('#createdate-metadata').text(response.create_date);
@@ -162,6 +163,31 @@ function populateItemDetail(itemId, itemType) {
             console.error('Unable to see item detail', error);
         }
     });
+}
+
+function deleteItem(itemId, itemType) {
+    $.ajax({
+        type: 'POST',
+        url: `/${itemType.toLowerCase()}/delete/${itemId}`,
+        success: function (response) {
+            console.log(response);
+
+            var deleteMessage = $("#delete-message p");
+            deleteMessage.text(response["delete_message"]);
+            if (!response["success"])
+            {
+                deleteMessage.css("color", "red");
+            }
+
+            // clear search results
+            $("#search-results").html("");
+        },
+        error: function (error) {
+            console.error('Unable to see item detail', error);
+        }
+    });
+    
+    closePopupFunction();
 }
 
 function closePopupFunction() {

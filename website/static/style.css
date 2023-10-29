@@ -367,6 +367,13 @@
   border-radius: 4px;
 }
 
+.popup-content .item-type {
+  background-color: #999;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 6px;
+}
+
 /* Icarus */
 .processed-image img {
   max-width: 800px;

@@ -35,73 +35,132 @@ function cancelPopup() {
 }
 
 function addEventOpenPopup(element, type) {
-    element.addEventListener(type, function () {
-        let documentId = element.getAttribute("document-id");
-        let documentTitle = element.getAttribute("document-title");
-        let popupId = element.getAttribute("popup-id");
+    element.addEventListener(type, function() {
+        openPopup(element);
+    });
+}
 
-        // Connect popup to menu-action
-        let popup = document.getElementById(popupId);
+function openPopup(element) {
+    let popupId = element.getAttribute("popup-id");
+    let popup = document.getElementById(popupId);
 
-        if (documentId && documentTitle && popup.querySelector("#document-title"))
-        {
-            popup.setAttribute("document-id", documentId);
-            popup.setAttribute("document-title", documentTitle);
-            popup.querySelector("#document-title").textContent = documentTitle;
+    // Document popup
+    if (element.hasAttribute("document-id")){
+        handleDocumentPopup(element, popup);
+    }
+
+    // Query item popup
+    else if (element.hasAttribute("item-id")){
+        handleQueryItemPopup(element, popup);
+    }
+
+    showPopup(popup);
+}
+
+// Show popup and blur background
+function showPopup(popup) {
+    popup.classList.remove("hidden-popup");
+    blurBg.classList.remove("hidden-blur");
+}
+
+// Handle Document popup
+function handleDocumentPopup(element, popup) {
+    // Populate popup attributes from element attributes
+    let documentId = element.getAttribute("document-id");
+    let documentTitle = element.getAttribute("document-title");
+    let title = popup.querySelector("#document-title");
+
+    if (documentId && documentTitle && title)
+    {
+        popup.setAttribute("document-id", documentId);
+        popup.setAttribute("document-title", documentTitle);
+        title.textContent = documentTitle;
+    }
+
+    let popupId = element.getAttribute("popup-id");
+    switch (popupId)
+    {
+        case "detail-popup":
+            popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
+            populateDocumentDetail(documentId);
+            break;
+        case "create-subfolder-popup":
+            popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
+            break;
+        case "rename-popup":
+            popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
+            break;
+        case "delete-folder-popup":
+            popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
+            break;
+        case "upload-popup":
+            popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
+            break;
+        case "delete-document-popup":
+            popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
+            break;
+        case "reindex-popup":
+            popup.querySelector("#popup-form").action = "/index/doc/" + documentId;
+            break;
+    }
+}
+
+function populateDocumentDetail(documentId) {
+    $.ajax({
+        type: 'GET',
+        url: `/files/doc/detail/${documentId}`,
+        success: function (response) {
+            console.log(response);
+
+            var imgElement = $('<img>').attr('src', '/buffer/' + response.storage_path);
+            $('#document-image').empty().append(imgElement);
+
+            // Populate information in the metadata panel
+            $('#id-metadata').text(response.id);
+            $('#createdate-metadata').text(response.create_date);
+            $('#doctype-metadata').text(response.doctype);
+            $('#description-metadata').val(response.description);
+        },
+        error: function (error) {
+            console.error('Unable to see document detail', error);
         }
+    });
+}
 
-        // Handle popup by AJAX
-        if (popupId == "detail-popup")
-        {
-            $.ajax({
-                type: 'GET',
-                url: `/files/doc/detail/${documentId}`,
-                success: function (response) {
-                    console.log(response);
+// Handle Query item popup
+function handleQueryItemPopup(element, popup) {
+    // Populate popup attributes from element attributes
+    let itemId = element.getAttribute("item-id");
+    if (itemId)
+    {
+        popup.setAttribute("item-id", itemId);
+    }
 
-                    var imgElement = $('<img>').attr('src', '/buffer/' + response.storage_path);
-                    $('#document-image').empty().append(imgElement);
+    let popupId = element.getAttribute("popup-id");
+    switch (popupId)
+    {
+        case "keytype-detail-popup":
+            let itemType = "keytypes";
+            populateItemDetail(itemId, itemType);
+            break;
+    }
+}
 
-                    // Populate information in the metadata panel
-                    $('#id-metadata').text(response.id);
-                    $('#createdate-metadata').text(response.create_date);
-                    $('#doctype-metadata').text(response.doctype);
-                    $('#description-metadata').val(response.description);
-                },
-                error: function (error) {
-                    console.error('Unable to see document detail', error);
-                }
-            });
+function populateItemDetail(itemId, itemType) {
+    $.ajax({
+        type: 'GET',
+        url: `/${itemType}/detail/${itemId}`,
+        success: function (response) {
+            console.log(response);
+
+            // Populate information in the metadata panel
+            $('#id-metadata').text(response.id);
+            $('#name-metadata').text(response.name);
+            $('#createdate-metadata').text(response.create_date);
+        },
+        error: function (error) {
+            console.error('Unable to see item detail', error);
         }
-
-        // Fill popup Form action with url
-        switch (popupId)
-        {
-            case "detail-popup":
-                popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
-                break;
-            case "create-subfolder-popup":
-                popup.querySelector("#popup-form").action = "/files/folder/create/" + documentId;
-                break;
-            case "rename-popup":
-                popup.querySelector("#popup-form").action = "/files/doc/update/" + documentId;
-                break;
-            case "delete-folder-popup":
-                popup.querySelector("#popup-form").action = "/files/folder/delete/" + documentId;
-                break;
-            case "upload-popup":
-                popup.querySelector("#popup-form").action = "/files/doc/upload/" + documentId;
-                break;
-            case "delete-document-popup":
-                popup.querySelector("#popup-form").action = "/files/doc/delete/" + documentId;
-                break;
-            case "reindex-popup":
-                popup.querySelector("#popup-form").action = "/index/doc/" + documentId;
-                break;
-        }
-
-        popup.classList.remove("hidden-popup");
-        blurBg.classList.remove("hidden-blur");
     });
 }
 

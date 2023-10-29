@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, current_user
+
+from .tools import request_tools
 from . import db, es, AppConst
 from .models import Keytype
 
@@ -37,20 +39,17 @@ def keytypes_search():
     freetext_term = request.args.get("freetext-term")
 
     keytypes = Keytype.query.filter(Keytype.name.like(f"%{freetext_term}%")).all()
-    columns = [Keytype.Const.FIELD_ID, 
-               Keytype.Const.FIELD_NAME, 
-               Keytype.Const.FIELD_CREATE_DATE]
+    columns = Keytype.columns()
     results = []
 
     for keytype in keytypes:
-        results.append({Keytype.Const.FIELD_ID: keytype.id,
-                        Keytype.Const.FIELD_NAME: keytype.name,
-                        Keytype.Const.FIELD_CREATE_DATE: keytype.create_date})
+        results.append(keytype.to_dict())
 
     results.sort(key=lambda x: x[Keytype.Const.FIELD_CREATE_DATE], reverse=True)
 
     return render_template("query/search_results.html", user=current_user, 
-                           results=results, columns=columns)
+                           results=results, columns=columns,
+                           detail_popup_id="keytype-detail-popup")
 
 @keytypes.route("/keytypes/create", methods=["POST"])
 @login_required
@@ -75,3 +74,10 @@ def keytypes_create():
 
     return jsonify(create_new_message=create_new_message, success=success)
 
+@keytypes.route("/keytypes/detail/<int:id>")
+@login_required
+def keytypes_detail(id: int):
+    if(request_tools.is_ajax_request(request)):
+        keytype = Keytype.query.get(id)
+
+        return jsonify(keytype.to_dict())

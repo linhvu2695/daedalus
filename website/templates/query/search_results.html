@@ -6,6 +6,7 @@
                     {% for col in columns%}
                         <th>{{col}}</th>
                     {% endfor %}
+                    <th style="width: 50px;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -14,6 +15,9 @@
                         {% for col in columns%}
                             <td>{{ result[col] }}</td>    
                         {% endfor %}
+                        <td>
+                            <button type="button" class="btn detail-btn open-popup" popup-id="{{detail_popup_id}}" item-id="{{ result.id }}">View</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

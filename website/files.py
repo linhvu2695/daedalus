@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, session, render_template, request, redirec
 from flask_login import login_required, current_user
 
 from .services.ingest_service import *
+from .tools import request_tools
 from . import db, es, AppConst
 from .models import Document
 from .structure.document import *
@@ -17,7 +18,7 @@ def files_explore():
 @files.route("/files/doc/detail/<int:doc_id>")
 @login_required
 def detail_document(doc_id: int):
-    if(_is_ajax_request(request)):
+    if(request_tools.is_ajax_request(request)):
         document = Document.query.get(doc_id)
 
         return jsonify(document.to_dict())
@@ -74,7 +75,7 @@ def update_document(doc_id: int):
                 if (mother_folder and mother_folder.doctype == Document.Const.DOCTYPE_FOLDER):
                     document.mother = mother_id
                     document.lineage_path = mother_folder.lineage_path + AppConst.SEPARATOR_PATH + str(document.id)
-                    if _is_ajax_request(request):
+                    if request_tools.is_ajax_request(request):
                         db.session.commit()
                         index.index_document(document)
                         return jsonify(redirect=True, 
@@ -333,9 +334,6 @@ def _extract_types(mimetype: str) -> (str, str):
     doctype = parts[0].strip()
     subtype = parts[1].strip()
     return doctype, subtype
-
-def _is_ajax_request(request) -> bool:
-    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 def _extract_ancestor_ids(lineage_path: str) -> list[int]:
     if (len(lineage_path) == 0): return None

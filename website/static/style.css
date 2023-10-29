@@ -361,6 +361,12 @@
   background-color: #f2f2f2;
 }
 
+.detail-btn {
+  border: none;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+}
+
 /* Icarus */
 .processed-image img {
   max-width: 800px;

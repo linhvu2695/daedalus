@@ -16,6 +16,10 @@ class Contact(db.Model, UserMixin):
         FIELD_FIRST_NAME = "first_name"
         FIELD_LAST_NAME = "last_name"
 
+    @staticmethod
+    def columns() -> list[str]: 
+        return [column.name for column in Contact.__table__.columns]
+
 class Document(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000))
@@ -61,6 +65,10 @@ class Document(db.Model):
         DOCTYPE_IMAGE = "image"
 
         SUBTYPE_STANDARD_IMAGE = "standard image"
+    
+    @staticmethod
+    def columns() -> list[str]: 
+        return [column.name for column in Document.__table__.columns]
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
@@ -93,3 +101,10 @@ class Keytype(db.Model):
         FIELD_ID = "id"
         FIELD_NAME = "name"
         FIELD_CREATE_DATE = "create_date"
+    
+    @staticmethod
+    def columns() -> list[str]: 
+        return [column.name for column in Keytype.__table__.columns]
+    
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}

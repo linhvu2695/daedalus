@@ -56,3 +56,8 @@ $(document).ready(function () {
         closePopupFunction()
     })
 });
+
+// Attach popup event for detail buttons
+$(document).on("click", ".detail-btn.open-popup", function() {
+    openPopup(this);
+});

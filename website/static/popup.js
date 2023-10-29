@@ -137,13 +137,18 @@ function handleQueryItemPopup(element, popup) {
     }
 
     let popupId = element.getAttribute("popup-id");
+    var itemType;
     switch (popupId)
     {
         case "keytype-detail-popup":
-            let itemType = "keytypes";
-            populateItemDetail(itemId, itemType);
+            itemType = "keytypes";
+            break;
+        case "keyword-detail-popup":
+            itemType = "keywords";
             break;
     }
+    
+    populateItemDetail(itemId, itemType);
 }
 
 function populateItemDetail(itemId, itemType) {

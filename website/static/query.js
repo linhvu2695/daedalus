@@ -29,16 +29,9 @@ $(document).ready(function () {
         var formData = $(this).serialize();
         var url = "";
 
-        switch (tableName)
-        {
-            case "keytype":
-                url = "/keytypes/create";
-                break;
-        }
-
         $.ajax({
             type: "POST",
-            url: "/keytypes/create",
+            url: `/${tableName}/create`,
             data: formData,
             dataType: "json",
             success: function (response) {

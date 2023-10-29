@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 
-from .tools import request_tools
-from . import db, es, AppConst
-from .models import Keytype
+from .tools.request_tools import OptionList, is_ajax_request
+from . import db, AppConst
+from .models import Keytype, Keyword
 
 keywords = Blueprint("keywords", __name__)
 keytypes = Blueprint("keytypes", __name__)
@@ -13,14 +13,88 @@ keytypes = Blueprint("keytypes", __name__)
 @keywords.route("/keywords")
 @login_required
 def keywords_explore():
-    return render_template("keywords.html", user=current_user)
+    return render_template("keywords.html", user=current_user, 
+                           query=render_template("query/query.html", search_url="/keywords/search"),
+                           query_create=render_template("query/query_create.html", 
+                                                        create_popup_id="create-keyword-popup",
+                                                        popup=render_template("popup/keywords_popup.html")))
 
 @keywords.route("/keywords/search")
 @login_required
 def keywords_search():
     freetext_term = request.args.get("freetext-term")
 
-    return render_template("keywords.html", user=current_user)
+    keywords = Keyword.query.filter(Keyword.name.like(f"%{freetext_term}%")).filter_by(binned=False).all()
+    columns = [Keyword.Const.FIELD_ID,
+               Keyword.Const.FIELD_NAME,
+               Keyword.Const.FIELD_KEYTPE,
+               Keyword.Const.FIELD_CREATE_DATE]
+    results = []
+
+    for keyword in keywords:
+        results.append(keyword.to_dict(columns))
+
+    results.sort(key=lambda x: x[Keyword.Const.FIELD_CREATE_DATE], reverse=True)
+
+    return render_template("query/search_results.html", user=current_user, 
+                           results=results, columns=columns,
+                           detail_popup_id="keyword-detail-popup")
+
+@keywords.route("/keywords/create", methods=["POST"])
+@login_required
+def keywords_create():
+    keyword_name = request.form.get(Keyword.Const.FIELD_NAME)
+    keytype_id = request.form.get(Keyword.Const.FIELD_KEYTPE)
+    create_message = ""
+    success = False
+
+    if (len(keyword_name) == 0):
+        return jsonify(create_message=create_message, success=success)
+    
+    exist_keytype = Keytype.query.get(keytype_id)
+    if (exist_keytype == None):
+        create_message = "Keytype not exist."
+        return jsonify(create_message=create_message, success=success)
+
+    if (len(Keyword.query.filter_by(name=keyword_name, keytype=keytype_id, binned=False).all()) == 0):
+        new_keyword = Keyword(name=keyword_name, keytype=keytype_id)
+        db.session.add(new_keyword)
+        db.session.commit()
+        create_message = f"New keyword created: {exist_keytype.name}.{new_keyword.name}."
+        success = True
+    else:
+        create_message = f"Keyword {keyword_name} already existed."
+        success = False
+    print(create_message)
+
+    return jsonify(create_message=create_message, success=success)
+
+@keywords.route("/keywords/detail/<int:id>")
+@login_required
+def keywords_detail(id: int):
+    if(is_ajax_request(request)):
+        keyword = Keyword.query.get(id)
+
+        return jsonify(keyword.to_dict())
+
+@keywords.route("/keywords/delete/<int:id>", methods=["POST"])
+@login_required
+def keywords_delete(id: int):
+    keyword = Keyword.query.get(id)
+    success = False
+    delete_message = ""
+
+    if (keyword):
+        keyword.binned = True
+        db.session.commit()
+        delete_message = f"Keyword {keyword.name} deleted successfully"
+        success = True
+    else:
+        delete_message = f"Keyword id {id} not found"
+        success = False
+
+    return jsonify({"success": success,
+                    "delete_message": delete_message})
 
 # Keytypes
 
@@ -32,6 +106,17 @@ def keytypes_explore():
                            query_create=render_template("query/query_create.html", 
                                                         create_popup_id="create-keytype-popup",
                                                         popup=render_template("popup/keytypes_popup.html")))
+
+@keytypes.route("keytypes/all")
+@login_required
+def keytypes_all():
+    available_keytypes = Keytype.query.filter_by(binned=False).all()
+
+    option_list = OptionList()
+    for keytype in available_keytypes:
+        option_list.add_option(keytype.id, keytype.name)
+
+    return jsonify(option_list.to_list())
 
 @keytypes.route("/keytypes/search")
 @login_required
@@ -61,9 +146,9 @@ def keytypes_create():
     success = False
 
     if (len(keytype_name) == 0):
-        return redirect(url_for("keytypes.keytypes_explore"))
+        return jsonify(create_message=create_message, success=success)
 
-    if (len(Keytype.query.filter_by(name=keytype_name).all()) == 0):
+    if (len(Keytype.query.filter_by(name=keytype_name, binned=False).all()) == 0):
         new_keytype = Keytype(name=keytype_name)
         db.session.add(new_keytype)
         db.session.commit()
@@ -79,7 +164,7 @@ def keytypes_create():
 @keytypes.route("/keytypes/detail/<int:id>")
 @login_required
 def keytypes_detail(id: int):
-    if(request_tools.is_ajax_request(request)):
+    if(is_ajax_request(request)):
         keytype = Keytype.query.get(id)
 
         return jsonify(keytype.to_dict())

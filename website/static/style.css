@@ -374,6 +374,13 @@
   padding: 6px;
 }
 
+.dropdown-input {
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 /* Icarus */
 .processed-image img {
   max-width: 800px;

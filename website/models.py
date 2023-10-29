@@ -131,3 +131,31 @@ class Keytype(db.Model):
 
         return {column: getattr(self, column) for column in columns}
 
+class Keyword(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True)
+    keytype = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    description = db.Column(db.String(10000))
+    binned = db.Column(db.Boolean, default=False)
+
+    class Const:
+        FIELD_ID = "id"
+        FIELD_NAME = "name"
+        FIELD_KEYTPE = "keytype"
+        FIELD_CREATE_DATE = "create_date"
+        FIELD_DESCRIPTION = "description"
+        FIELD_BINNED = "binned"
+    
+    @staticmethod
+    def columns() -> list[str]: 
+        return [column.name for column in Keyword.__table__.columns]
+    
+    def to_dict(self, filter=[]):
+        if len(filter) > 0:
+            columns = [column.name for column in self.__table__.columns if (column.name in filter)]
+        else:
+            columns = [column.name for column in self.__table__.columns]
+
+        return {column: getattr(self, column) for column in columns}
+

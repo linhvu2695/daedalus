@@ -172,7 +172,7 @@ def freetext_search(folder_id: int):
 
     builder = search.ESQueryBuilder()
     if (session.get(AppConst.SESSION_CURRENT_SEETHRU_KEY, False)):
-        builder.add_term(Document.Const.INDEXED_LINEAGE_PATH, folder_id)
+        builder.add_term(Document.Const.INDEXED_FIELD_LINEAGE_PATH, folder_id)
     else:
         builder.add_term(Document.Const.INDEXED_FIELD_MOTHER, folder_id)
     builder.add_wildcard(Document.Const.INDEXED_FIELD_TITLE, term)

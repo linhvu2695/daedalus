@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, jsonify, json
 from flask_login import login_required, current_user
 
 from .tools.request_tools import OptionList, is_ajax_request
 from . import db, AppConst
+from .query import query
 from .models import Keytype, Keyword
 
 keywords = Blueprint("keywords", __name__)
@@ -23,18 +24,28 @@ def keywords_explore():
 @login_required
 def keywords_search():
     freetext_term = request.args.get("freetext-term")
-
-    keywords = Keyword.query.filter(Keyword.name.like(f"%{freetext_term}%")).filter_by(binned=False).all()
     columns = [Keyword.Const.FIELD_ID,
                Keyword.Const.FIELD_NAME,
                Keyword.Const.FIELD_KEYTPE,
                Keyword.Const.FIELD_CREATE_DATE]
-    results = []
 
-    for keyword in keywords:
-        results.append(keyword.to_dict(columns))
+    # Build query
+    queryBuilder = query.QueryBuilder()
+    queryBuilder.add_main_table("keyword KW")
+    queryBuilder.add_join_table("JOIN keytype KT ON KW.keytype = KT.id")
 
-    results.sort(key=lambda x: x[Keyword.Const.FIELD_CREATE_DATE], reverse=True)
+    queryBuilder.add_field(f"KW.id AS {columns[0]}")
+    queryBuilder.add_field(f"KW.name AS {columns[1]}")
+    queryBuilder.add_field(f"KT.name AS {columns[2]}")
+    queryBuilder.add_field(f"KW.create_date AS {columns[3]}")
+
+    queryBuilder.add_where_condition(f"KW.name LIKE '%{freetext_term}%'")
+    queryBuilder.add_where_condition(f"KW.binned = 0")
+    queryBuilder.add_sort_field("KW.create_date DESC")
+
+    response = queryBuilder.get_query_result()
+    results = json.loads(response.get_data(as_text=True))
+    
 
     return render_template("query/search_results.html", user=current_user, 
                            results=results, columns=columns,

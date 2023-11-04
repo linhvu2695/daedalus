@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Icarus{% endblock %}
+
+{%block content%}
+<br />
+<h1>Icarus</h1>
+<br/>
+
+<br />
+<h2>Object Detection</h2>
+<br/>
+
+<p>Object detection is a technique used in computer vision for the identification and localization of objects within an image or a video. You Only Look Once (YOLO) is a state-of-the-art, real-time object detection algorithm introduced in 2015 by Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi in their famous research paper “You Only Look Once: Unified, Real-Time Object Detection”.</p>
+<br>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="/icarus/ObjDetect/generate" method="post" enctype="multipart/form-data" id="image-form">
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image" accept="image/*" required id="image-input" required>
+    <br>
+
+    <div id="image-preview-container" style="display: block;">
+        <h6>Selected Image:</h6>
+        {% if image %}
+            <img id="preview-image" src="data:image/jpeg;base64,{{ image }}" alt="Selected Image">
+        {% else %}
+            <img id="preview-image">
+        {% endif %}
+        <img id="preview-image">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Compute</button>
+</form>
+
+<br>
+
+{% if result_image_path %}
+<div class="processed-image">
+    <img src="/buffer/{{result_image_path}}">
+</div>
+{% endif %}
+
+{% if result_data%}
+<h6>Detected objects:</h6>
+<ul>
+    {% for item in result_data %}
+        <li style="color: rgb{{item['color']}}">{{item["text"]}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<script src="/static/imagePreview.js"></script>
+
+{%endblock%}

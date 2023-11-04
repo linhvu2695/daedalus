@@ -1,20 +1,32 @@
 from flask import Blueprint, render_template, request, current_app
 from flask_login import login_required, current_user
-import base64, io
 from os import path
+
 import torch
 from transformers import CLIPProcessor, CLIPModel
+from transformers import DetrImageProcessor, DetrForObjectDetection
 import pytesseract
 from PIL import Image, ImageDraw
+
 from . import db, AppConst
+from .tools import image_tools
 
 icarus = Blueprint("icarus", __name__)
 
 # CLIP https://arxiv.org/abs/2103.00020 
 # Zeroshot models
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
+clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
+clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
+
+# OCR storage folder
 ocr_container_path = "/ocr"
+
+# DETR https://arxiv.org/abs/2005.12872 
+detr_model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
+detr_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
+objdetect_container_path = "/objdetect"
+colors = [(50, 205, 50), (255, 215, 0), (64, 224, 208), (250, 128, 14), (255, 218, 185), (135, 206, 250), (186, 85, 211)]
+
 
 @icarus.route("/icarus/ZeroShot")
 @login_required
@@ -34,16 +46,12 @@ def zeroshot_generate():
 
     # Get the uploaded image
     image = Image.open(request.files['image']).convert("RGB")
+    encoded_image = image_tools.encode_image_to_base64(image)
     labels = [label.strip() for label in request.form['labels'].split(',')]
-
-    # Get the image encoded in base64
-    buffered = io.BytesIO()
-    image.save(buffered, format="JPEG")
-    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
     
     # Process the image with CLIP
-    inputs = processor(text=labels, images=image, return_tensors="pt", padding=True)
-    outputs = model(**inputs)
+    inputs = clip_processor(text=labels, images=image, return_tensors="pt", padding=True)
+    outputs = clip_model(**inputs)
     logits_per_image = outputs.logits_per_image # this is the image-text similarity score
     probs = logits_per_image.softmax(dim=1) # softmax to get the label probabilities
 
@@ -103,7 +111,6 @@ def ocr_generate():
             text_to_render.append("")
             for line in sorted(text_data[block][par].keys()):
                 text_to_render[-1] += (text_data[block][par][line] + "\n")
-    print(text_to_render)
 
     container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + ocr_container_path
     result_image_path = path.join(container_path, 'ocr_result.jpg')
@@ -112,3 +119,50 @@ def ocr_generate():
 
     return render_template('icarus/ocr.html', user=current_user, 
                            result_image_path=result_image_path, text_to_render=text_to_render)
+
+@icarus.route("/icarus/ObjDetect")
+@login_required
+def objdetect_explore():
+    return render_template("icarus/objdetect.html", user=current_user)
+
+@icarus.route("/icarus/ObjDetect/generate", methods=["POST"])
+@login_required
+def objdetect_generate():
+    if 'image' not in request.files:
+        return render_template('icarus/objdetect.html', error='No image provided.')
+    
+    # Get the uploaded image
+    image = Image.open(request.files['image']).convert("RGB")
+
+    # Process the image with DETR
+    inputs = detr_processor(images=image, return_tensors="pt")
+    outputs = detr_model(**inputs)
+
+    target_sizes = torch.tensor([image.size[::-1]])
+    results = detr_processor.post_process_object_detection(outputs, target_sizes=target_sizes, threshold=0.9)[0]
+
+    print(f"Results: {results}")
+
+    # Create a drawing object to add bounding boxes & text labels to the image
+    draw = ImageDraw.Draw(image)
+    result_data = []
+
+    color_index = 0
+    for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+        x0, y0, x1, y1 = box.tolist()
+        label_name = detr_model.config.id2label[label.item()]
+        color = colors[color_index % len(colors)]
+        score = round(score.item(), 2)
+        text = f"{label_name} ({score})"
+
+        result_data.append({"text": text, "color": color})
+        draw.rectangle([x0, y0, x1, y1], outline=color, width=4)
+        draw.text((x0, y0 - 10), text, fill=color, font=None, size=16, encoding="utf-8")
+        color_index += 1
+
+    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + objdetect_container_path
+    result_image_path = path.join(container_path, 'objdetect_result.jpg')
+    image.save(result_image_path)
+
+    return render_template('icarus/objdetect.html', user=current_user, 
+                           result_image_path=result_image_path, result_data=result_data)

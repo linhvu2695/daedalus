@@ -1,0 +1,12 @@
+{% if label %}
+    <h6>Computed label: <strong>{{label}}</strong></h6>
+
+    <div class="bar-chart">
+        {% for bar_label, value in label_props.items() %}
+            <div class="bar-item">
+                <div class="label">{{ bar_label }} ({{ value|round(2) }}%)</div>
+                <div class="bar" style="width: {{ (value*100)|round|int }}%;"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

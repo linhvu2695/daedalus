@@ -1,0 +1,14 @@
+{% if result_image_path %}
+<div class="processed-image">
+    <img src="/buffer/{{result_image_path}}">
+</div>
+{% endif %}
+
+{% if result_data%}
+<h6>Detected objects:</h6>
+<ul>
+    {% for item in result_data %}
+        <li style="color: rgb{{item['color']}}">{{item["text"]}}</li>
+    {% endfor %}
+</ul>
+{% endif %}

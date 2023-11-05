@@ -28,7 +28,7 @@ def create_app():
     from .keywords import keywords
     from .keywords import keytypes
     from .jobs import jobs
-    from .icarus import icarus
+    from .icarus.icarus import icarus
     from .elasticsearch.index import index
 
     for blueprint in [views, auth, upload, keywords, keytypes, files, buffer, jobs, icarus, index]:

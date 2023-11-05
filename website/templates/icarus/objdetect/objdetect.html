@@ -17,7 +17,7 @@
     <p style="color: red;">{{ error }}</p>
 {% endif %}
 
-<form action="/icarus/ObjDetect/generate" method="post" enctype="multipart/form-data" id="image-form">
+<form class="icarus-gen" icarus-app="ObjDetect" method="post" enctype="multipart/form-data" id="image-form">
     <label for="image">Upload Image:</label>
     <input type="file" name="image" accept="image/*" required id="image-input" required>
     <br>
@@ -37,21 +37,9 @@
 
 <br>
 
-{% if result_image_path %}
-<div class="processed-image">
-    <img src="/buffer/{{result_image_path}}">
-</div>
-{% endif %}
-
-{% if result_data%}
-<h6>Detected objects:</h6>
-<ul>
-    {% for item in result_data %}
-        <li style="color: rgb{{item['color']}}">{{item["text"]}}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+<div id="gen-results"></div>
 
 <script src="/static/imagePreview.js"></script>
+<script src="/static/icarus.js"></script>
 
 {%endblock%}

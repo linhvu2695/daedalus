@@ -17,7 +17,7 @@
     <p style="color: red;">{{ error }}</p>
 {% endif %}
 
-<form action="/icarus/OCR/generate" method="post" enctype="multipart/form-data" id="image-form">
+<form class="icarus-gen" icarus-app="OCR" method="post" enctype="multipart/form-data" id="image-form">
     <label for="image">Upload Image:</label>
     <input type="file" name="image" accept="image/*" required id="image-input" required>
     <br>
@@ -37,21 +37,9 @@
 
 <br>
 
-{% if result_image_path %}
-<div class="processed-image">
-    <img src="/buffer/{{result_image_path}}">
-</div>
-{% endif %}
-
-{% if text_to_render%}
-<h6>Recognized text:</h6>
-<div class="processed-text">
-        {% for paragraph in text_to_render %}
-            <p>{{paragraph}}</p>
-        {% endfor %}
-</div>
-{% endif %}
+<div id="gen-results"></div>
 
 <script src="/static/imagePreview.js"></script>
+<script src="/static/icarus.js"></script>
 
 {%endblock%}

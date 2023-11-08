@@ -21,12 +21,17 @@ $(document).ready(function () {
             data: formData,
             processData: false,
             contentType: false,
+            beforeSend: function () {$("#loading-spinner").show();},
             success: function (data) {
+                $('#loading-spinner').hide();
                 $("#gen-results").html(data);
             },
             error: function (error) {
+                $('#loading-spinner').hide();
                 console.log("Error:", error);
             }
         });
+
+        
     });
 })

@@ -19,3 +19,4 @@ Icarus is the hub for AI services. Some services require certain installations o
 
 ![Alt text](icarus-zero-shot.png)
 ![Alt text](icarus-ocr.png)
+![Alt text](icarus-diffusion.png)

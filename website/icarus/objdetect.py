@@ -7,8 +7,8 @@ from PIL import Image, ImageDraw, ImageFont
 from .. import AppConst
 
 # DETR https://arxiv.org/abs/2005.12872 
-detr_model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
-detr_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
+mdoel = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
+processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
 objdetect_container_path = "/objdetect"
 colors = [(50, 205, 50), (255, 215, 0), (64, 224, 208), (250, 128, 14), (255, 218, 185), (135, 206, 250), (186, 85, 211)]
 
@@ -21,11 +21,11 @@ def objdetect_compute(image: Image) -> (str, list):
     """
 
     # Process the image with DETR
-    inputs = detr_processor(images=image, return_tensors="pt")
-    outputs = detr_model(**inputs)
+    inputs = processor(images=image, return_tensors="pt")
+    outputs = mdoel(**inputs)
 
     target_sizes = torch.tensor([image.size[::-1]])
-    results = detr_processor.post_process_object_detection(outputs, target_sizes=target_sizes, threshold=0.9)[0]
+    results = processor.post_process_object_detection(outputs, target_sizes=target_sizes, threshold=0.9)[0]
 
     # Create a drawing object to add bounding boxes & text labels to the image
     draw = ImageDraw.Draw(image)
@@ -34,7 +34,7 @@ def objdetect_compute(image: Image) -> (str, list):
     color_index = 0
     for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
         x0, y0, x1, y1 = box.tolist()
-        label_name = detr_model.config.id2label[label.item()]
+        label_name = mdoel.config.id2label[label.item()]
         color = colors[color_index % len(colors)]
         score = round(score.item(), 2)
         text = f"{label_name} ({score})"

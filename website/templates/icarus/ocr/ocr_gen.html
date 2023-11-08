@@ -4,8 +4,8 @@
 </div>
 {% endif %}
 
-{% if text_to_render%}
 <h6>Recognized text:</h6>
+{% if text_to_render%}
 <div class="processed-text">
         {% for paragraph in text_to_render %}
             <p>{{paragraph}}</p>

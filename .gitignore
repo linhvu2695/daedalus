@@ -5,3 +5,4 @@ instance
 storage
 __pycache__
 buffer/*
+config.py

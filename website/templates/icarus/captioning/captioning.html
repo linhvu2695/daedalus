@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Icarus{% endblock %}
+
+{%block content%}
+<br />
+<h1>Icarus</h1>
+<br/>
+
+<br />
+<h2>Image Captioning</h2>
+<br/>
+
+<p>Image Captioning is the process of generating textual description of an image. It uses both Natural Language Processing and Computer Vision to generate the captions.</p>
+<p>The <a href="https://huggingface.co/docs/transformers/model_doc/vision-encoder-decoder">Vision Encoder Decoder Model</a> can be used to initialize an image-to-text model with any pre-trained Transformer-based vision model as the encoder (e.g. ViT, BEiT, DeiT, Swin) and any pre-trained language model as the decoder (e.g. RoBERTa, GPT2, BERT, DistilBERT).</p>
+<br>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form class="icarus-gen" icarus-app="Captioning" method="post" enctype="multipart/form-data" id="image-form">
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image" accept="image/*" required id="image-input" required>
+    <br>
+
+    <div id="image-preview-container" style="display: block;">
+        <h6>Selected Image:</h6>
+        {% if image %}
+            <img id="preview-image" src="data:image/jpeg;base64,{{ image }}" alt="Selected Image">
+        {% else %}
+            <img id="preview-image">
+        {% endif %}
+        <img id="preview-image">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Compute</button>
+</form>
+
+<br>
+
+<div id="gen-results"></div>
+
+<script src="/static/imagePreview.js"></script>
+<script src="/static/icarus.js"></script>
+
+{%endblock%}

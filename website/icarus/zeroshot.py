@@ -6,8 +6,8 @@ from ..tools import image_tools
 
 # CLIP https://arxiv.org/abs/2103.00020 
 # Zeroshot models
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
-clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
 
 def zeroshot_compute(image: Image, labels: list[str]) -> (str, dict, str):
     """
@@ -19,8 +19,8 @@ def zeroshot_compute(image: Image, labels: list[str]) -> (str, dict, str):
     encoded_image = image_tools.encode_image_to_base64(image)
     
     # Process the image with CLIP
-    inputs = clip_processor(text=labels, images=image, return_tensors="pt", padding=True)
-    outputs = clip_model(**inputs)
+    inputs = processor(text=labels, images=image, return_tensors="pt", padding=True)
+    outputs = model(**inputs)
     logits_per_image = outputs.logits_per_image # this is the image-text similarity score
     probs = logits_per_image.softmax(dim=1) # softmax to get the label probabilities
 

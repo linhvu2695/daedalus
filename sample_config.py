@@ -1,16 +1,16 @@
 # Authentication
-CONFIG_SECRET_KEY = "mysecret"
+CONFIG_SECRET_KEY = ""
 
 # Database
-DATABASE_NAME = "database.db"
+DATABASE_NAME = ""
 
 # Storage
-CONFIG_STORAGE_PATH = "/Users/vlinh/Code/personal/projects/daedalus/storage" 
+CONFIG_STORAGE_PATH = "" 
 
 # ElasticSearch
-ELASTICSEARCH_HOST = "localhost"  
+ELASTICSEARCH_HOST = ""  
 ELASTICSEARCH_PORT = 9200  
-ELASTICSEARCH_INDEX_NAME = "ariadne"
+ELASTICSEARCH_INDEX_NAME = ""
 
 # Hugging Face
-HUGGINGFACE_API_KEY = "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"
+HUGGINGFACE_API_KEY = ""

@@ -71,8 +71,10 @@ class Document(db.Model):
 
         DOCTYPE_FOLDER = "folder"
         DOCTYPE_IMAGE = "image"
+        DOCTYPE_AUDIO = "audio"
 
         SUBTYPE_STANDARD_IMAGE = "standard image"
+        SUBTYPE_STANDARD_AUDIO = "standard audio"
     
     @staticmethod
     def columns() -> list[str]: 

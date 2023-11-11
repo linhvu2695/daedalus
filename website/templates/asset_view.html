@@ -14,8 +14,10 @@
         <h6>{{doc.title}}</h6>
         {% if doc.doctype == "image" %}
         <img src="/buffer/{{doc.storage_path}}" style="border-radius: 5px;">
-        {% else %}
+        {% elif doc.doctype == "folder" %}
         <i class="fa fa-folder"></i>
+        {% elif doc.doctype == "audio" %}
+        <i class="fa fa-volume-up"></i>
         {% endif %}
     </div>
     {% endfor %}

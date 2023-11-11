@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 from .. import AppConst
 
 # OCR storage folder
-ocr_container_path = "/ocr"
+OCR_CONTAINER_PATH = "/icarus/ocr"
 
 def ocr_compute(image: Image) -> (str, str):
     """
@@ -55,7 +55,7 @@ def ocr_compute(image: Image) -> (str, str):
             for line in sorted(text_data[block][par].keys()):
                 text_to_render[-1] += (text_data[block][par][line] + "\n")
 
-    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + ocr_container_path
+    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + OCR_CONTAINER_PATH
     result_image_path = path.join(container_path, 'ocr_result.jpg')
     image.save(result_image_path)
 

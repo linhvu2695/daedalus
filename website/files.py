@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, session, render_template, request, redirect, url_for
+from flask import Blueprint, jsonify, session, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from .services.ingest_service import *
@@ -99,14 +99,34 @@ def update_document(doc_id: int):
 def upload_document(mother_id: int):
     uploaded_files = request.files.getlist("content")
 
-    for file in uploaded_files:
-        mediatype, subtype = _extract_types(file.mimetype)
+    success = False
+    # Upload single file
+    if len(uploaded_files) == 1:
+        file = uploaded_files[0]
+        print(f"Upload to folder {mother_id}...")
+        response = ingest(mother_id, file)
 
-        if mediatype == Document.Const.DOCTYPE_IMAGE:
-            ingest_service = ImageIngestService()
-            ingest_service.ingest_document(mother_id, file)
+        if response.success:
+            success_message = f"Upload {response.mediatype} successfully."
+            print(success_message)
+            flash(success_message, category="success")
+        else:
+            error_message = f"Failed to upload {response.mediatype}. {response.message}"
+            print(error_message)
+            flash(error_message, category="error")
+    else:
+        for file in uploaded_files:
+            print(f"Upload to folder {mother_id}...")
+            response = ingest(mother_id, file)
 
-    print(f"Upload to folder {mother_id}")
+            if response.success:
+                success_message = f"Upload {response.mediatype} successfully."
+                print(success_message)
+                flash(success_message, category="success")
+            else:
+                error_message = f"Failed to upload {response.mediatype}. {response.message}"
+                print(error_message)
+                flash(error_message, category="error")
 
     return open_current_folder_redirect()
 
@@ -325,15 +345,6 @@ def _delete_document(document) -> None:
 
     # Reindex document
     index.index_document(document)
-
-def _extract_types(mimetype: str) -> (str, str):
-    parts = mimetype.split("/")
-
-    if len(parts) != 2:
-        return None, None
-    doctype = parts[0].strip()
-    subtype = parts[1].strip()
-    return doctype, subtype
 
 def _extract_ancestor_ids(lineage_path: str) -> list[int]:
     if (len(lineage_path) == 0): return None

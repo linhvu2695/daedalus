@@ -9,7 +9,8 @@ from .. import AppConst
 # DETR https://arxiv.org/abs/2005.12872 
 mdoel = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
 processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
-objdetect_container_path = "/objdetect"
+
+OBJDETECT_CONTAINER_PATH = "/icarus/objdetect"
 colors = [(50, 205, 50), (255, 215, 0), (64, 224, 208), (250, 128, 14), (255, 218, 185), (135, 206, 250), (186, 85, 211)]
 
 def objdetect_compute(image: Image) -> (str, list):
@@ -44,7 +45,7 @@ def objdetect_compute(image: Image) -> (str, list):
         draw.text((x0, y0 - 10), text, fill=color, font=None, encoding="utf-8")
         color_index += 1
 
-    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + objdetect_container_path
+    container_path = current_app.config[AppConst.CONFIG_STORAGE_PATH] + OBJDETECT_CONTAINER_PATH
     result_image_path = path.join(container_path, 'objdetect_result.jpg')
     image.save(result_image_path)
 

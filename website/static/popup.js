@@ -111,10 +111,20 @@ function populateDocumentDetail(documentId) {
         url: `/files/doc/detail/${documentId}`,
         success: function (response) {
             console.log(response);
-
-            var imgElement = $('<img>').attr('src', '/buffer/' + response.storage_path);
-            $('#document-image').empty().append(imgElement);
-
+            
+            switch (response.doctype){
+                case "image":
+                    var imgElement = $('<img>').attr('src', '/buffer/' + response.storage_path);
+                    $('#document-preview').empty().append(imgElement);
+                    break;
+                case "audio":
+                    var audioElement = $('<audio controls class=\'audio-player\'>').append(
+                        $('<source>').attr('src', '/buffer/' + response.storage_path).attr('type', 'audio/mpeg')
+                    );
+                    $('#document-preview').empty().append(audioElement);
+                    break;
+            }
+            
             // Populate information in the metadata panel
             $('#id-metadata').text(response.id);
             $('#createdate-metadata').text(response.create_date);
@@ -199,6 +209,10 @@ function closePopupFunction() {
     popupContents.forEach(function (popupContent) {
         if (!popupContent.classList.contains("hidden-popup"))
             popupContent.classList.add("hidden-popup");
+
+            // Close any playing audios
+            var audioPlayers = document.querySelectorAll('.audio-player');
+            audioPlayers.forEach(audioPlayer => audioPlayer.pause())
     });
     blurBg.classList.add("hidden-blur");
 };

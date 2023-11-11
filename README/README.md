@@ -1,8 +1,12 @@
 # Daedalus project
-Run:
-```
-python main.py
-```
+## Setup
+- Fill in `config.py` your site configs
+- Make sure your system have these applications:
+  - `tesseract` : for OCR module. `brew install tesseract`
+  - `ffmpeg` : for audio module. `brew install ffmpeg`
+
+- Run: `python main.py`
+
 ![Alt text](files.png)
 
 ## Setup ElasticSearch
@@ -13,10 +17,9 @@ docker run -d --name elasticsearch \
   docker.elastic.co/elasticsearch/elasticsearch:7.14.1
 ```
 
-## Setup Icarus
-Icarus is the hub for AI services. Some services require certain installations on the hosting server:
-- OCR: `brew install tesseract`
+## Icarus
+Icarus is the hub for AI services
 
-![Alt text](icarus-zero-shot.png)
+![Alt text](icarus-zeroshot.png)
 ![Alt text](icarus-ocr.png)
 ![Alt text](icarus-diffusion.png)

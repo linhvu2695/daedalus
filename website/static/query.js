@@ -3,7 +3,7 @@ $(document).ready(function () {
     $("#search-form").submit(function (event) {
         event.preventDefault();
         
-        var url = $(this).attr('url');
+        var url = $(this).attr("url");
         var freetextTerm = $("#freetext-term").val();
         var formData = $(this).serialize();
 
@@ -36,7 +36,7 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 var createMessage = $("#create-message p");
-                createMessage.text(response["create_message"]);
+                createMessage.text(response["message"]);
                 if (!response["success"])
                 {
                     createMessage.css("color", "red");

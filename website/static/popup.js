@@ -112,6 +112,7 @@ function populateDocumentDetail(documentId) {
         success: function (response) {
             console.log(response);
             
+            // Populate document preview
             switch (response.doctype){
                 case "image":
                     var imgElement = $('<img>').attr('src', '/buffer/' + response.storage_path);
@@ -130,11 +131,56 @@ function populateDocumentDetail(documentId) {
             $('#createdate-metadata').text(response.create_date);
             $('#doctype-metadata').text(response.doctype);
             $('#description-metadata').val(response.description);
+
+            // Populate keyword panel
+            populateKeywordPnl(documentId);
         },
-        error: function (error) {
-            console.error('Unable to see document detail', error);
+        error: function (message) {console.log("Error:", message);
         }
     });
+}
+
+function populateKeywordPnl(documentId) {
+    // AJAX event to get keywords metadata
+    $.ajax({
+        type: "GET",
+        url: `/keywords/doc/${documentId}`,
+        success: function (data) {
+            keywords = Object.values(data);
+            $('#keywords-metadata').empty();
+            keywords.forEach(function(keyword) {
+                // Keywords name
+                var keywordBtn = $('<button>', {
+                    class: 'btn btn-link keyword-detail-btn',
+                    text: keyword.name,
+                    click: function(event) {
+                        event.preventDefault();
+                        alert('Keyword: ' + keyword.name);
+                    }
+                });
+                // Button to untag keyword
+                var removeBtn = $('<button>', {
+                    class: 'btn keyword-rmv-btn',
+                    html: '<i class="fa fa-times"></i>',
+                    click: function(event) {
+                        // Remove keyword from document
+                        event.preventDefault();
+                        $.ajax({
+                            type: "POST",
+                            url: `/keywords/untag?doc=${documentId}&keywords=${keyword.id}`,
+                            success: function() {
+                                // Refresh keyword metadata after untag a keyword
+                                populateKeywordPnl(documentId);
+                            },
+                            error: function (message) {console.log("Error:", message);}
+                        })
+                    }
+                  });
+                $('#keywords-metadata').append(keywordBtn, removeBtn);
+            });
+        },
+        error: function (message) {console.log("Error:", message);}
+    })
 }
 
 // Handle Query item popup

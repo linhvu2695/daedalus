@@ -1,5 +1,6 @@
 from flask import jsonify, Response
 from sqlalchemy import text
+from typing import Dict
 from .. import db
 from ..exception.query_exception import *
 
@@ -99,7 +100,7 @@ class QueryBuilder:
         }
         return full_query.format(**clause_placeholders).strip()
 
-    def get_query_result(self) -> Response:
+    def get_query_result(self) -> Dict[str, str]:
         """
         Get the query result. Only call this when all required clauses have been filled.
         """
@@ -116,9 +117,10 @@ class QueryBuilder:
         rows = result.fetchall()
         columns = result.keys()
         response = [dict(zip(columns, row)) for row in rows]
+        print(response)
         result.close()
 
-        return jsonify(response)
+        return response
 
     def _get_fields_query(self) -> str:
         return self.Const.COMMA_SEPARATOR.join(self.fields_query)

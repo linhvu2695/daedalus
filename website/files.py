@@ -7,6 +7,7 @@ from . import db, es, AppConst
 from .models import Document
 from .structure.document import *
 from .elasticsearch import search, index
+from .query import query
 
 files = Blueprint("files", __name__)
 
@@ -18,6 +19,9 @@ def files_explore():
 @files.route("/files/doc/detail/<int:doc_id>")
 @login_required
 def detail_document(doc_id: int):
+    """
+    Get all core metadata of a document.
+    """
     if(request_tools.is_ajax_request(request)):
         document = Document.query.get(doc_id)
 
@@ -211,6 +215,7 @@ def freetext_search(folder_id: int):
         documents = Document.query.filter(Document.id.in_(response.get_ids())).all()
 
     return get_rendered_files(documents, folder)
+
 
 # Public functions
 

@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from .tools.request_tools import OptionList, is_ajax_request
 from . import db, AppConst
 from .query import query
-from .models import Keytype, Keyword
+from .models import Keytype, Keyword, Dockey
 
 keywords = Blueprint("keywords", __name__)
 keytypes = Blueprint("keytypes", __name__)
@@ -19,6 +19,17 @@ def keywords_explore():
                            query_create=render_template("query/query_create.html", 
                                                         create_popup_id="create-keyword-popup",
                                                         popup=render_template("popup/keywords_popup.html")))
+
+@keywords.route("keywords/all")
+@login_required
+def keywords_all():
+    available_keywords = Keyword.query.filter_by(binned=False).all()
+
+    option_list = OptionList()
+    for keyword in available_keywords:
+        option_list.add_option(keyword.id, keyword.name)
+
+    return jsonify(option_list.to_list())
 
 @keywords.route("/keywords/search")
 @login_required
@@ -44,11 +55,9 @@ def keywords_search():
     queryBuilder.add_sort_field("KW.create_date DESC")
 
     response = queryBuilder.get_query_result()
-    results = json.loads(response.get_data(as_text=True))
-    
 
     return render_template("query/search_results.html", user=current_user, 
-                           results=results, columns=columns,
+                           results=response, columns=columns,
                            detail_popup_id="keyword-detail-popup")
 
 @keywords.route("/keywords/create", methods=["POST"])
@@ -56,29 +65,29 @@ def keywords_search():
 def keywords_create():
     keyword_name = request.form.get(Keyword.Const.FIELD_NAME)
     keytype_id = request.form.get(Keyword.Const.FIELD_KEYTPE)
-    create_message = ""
     success = False
+    message = ""
 
     if (len(keyword_name) == 0):
-        return jsonify(create_message=create_message, success=success)
+        return jsonify(message=message, success=success)
     
     exist_keytype = Keytype.query.get(keytype_id)
     if (exist_keytype == None):
-        create_message = "Keytype not exist."
-        return jsonify(create_message=create_message, success=success)
+        message = "Keytype not exist."
+        return jsonify(message=message, success=success)
 
     if (len(Keyword.query.filter_by(name=keyword_name, keytype=keytype_id, binned=False).all()) == 0):
         new_keyword = Keyword(name=keyword_name, keytype=keytype_id)
         db.session.add(new_keyword)
         db.session.commit()
-        create_message = f"New keyword created: {exist_keytype.name}.{new_keyword.name}."
+        message = f"New keyword created: {exist_keytype.name}.{new_keyword.name}."
         success = True
     else:
-        create_message = f"Keyword {keyword_name} already existed."
+        message = f"Keyword {keyword_name} already existed."
         success = False
-    print(create_message)
+    print(message)
 
-    return jsonify(create_message=create_message, success=success)
+    return jsonify(message=message, success=success)
 
 @keywords.route("/keywords/detail/<int:id>")
 @login_required
@@ -106,6 +115,78 @@ def keywords_delete(id: int):
 
     return jsonify({"success": success,
                     "delete_message": delete_message})
+
+@keywords.route("/keywords/tag", methods=["POST"])
+@login_required
+def keywords_tag():
+    doc_id = int(request.args.get("doc"))
+    keywords = int(request.args.get("keywords"))
+    success = False
+    message = ""
+    
+    if (doc_id != None and doc_id > 0 and keywords != None and keywords > 0):
+        # Check if the keyword is already tagged to the document
+        existing_keywords = Dockey.query.filter_by(doc_id=doc_id, keyword_id=keywords, binned=0)
+        if (existing_keywords.count() > 0):
+            message = f"Keyword {keywords} is already tagged to document {doc_id}."
+            return jsonify(message=message, success=success)
+        
+        new_dockey = Dockey(keyword_id=keywords, doc_id=doc_id)
+        db.session.add(new_dockey)
+        db.session.commit()
+        message = f"Keyword {keywords} is tagged to document {doc_id}."
+        success = True
+    else:
+        message = f"Invalid input: keyword {keywords} & document {doc_id}."
+        success = False
+
+    return jsonify(message=message, success=success)
+
+@keywords.route("/keywords/doc/<int:doc_id>")
+@login_required
+def get_keywords_from_doc(doc_id: int):
+    """
+    Get all keywords tagged to a document.
+    """
+    columns = [Keyword.Const.FIELD_ID,
+                Keyword.Const.FIELD_NAME]
+
+    # Build query
+    queryBuilder = query.QueryBuilder()
+    queryBuilder.add_main_table("dockey DK")
+    queryBuilder.add_join_table("JOIN keyword KW ON DK.keyword_id = KW.id")
+
+    queryBuilder.add_field(f"KW.id AS {columns[0]}")
+    queryBuilder.add_field(f"KW.name AS {columns[1]}")
+
+    queryBuilder.add_where_condition(f"DK.doc_id = {doc_id}")
+    queryBuilder.add_where_condition(f"KW.binned = 0")
+    queryBuilder.add_where_condition(f"DK.binned = 0")
+    queryBuilder.add_sort_field("KW.name")
+
+    response = queryBuilder.get_query_result()
+    return jsonify(response)
+
+@keywords.route("/keywords/untag", methods=["POST"])
+@login_required
+def keyword_untag():
+    doc_id = int(request.args.get("doc"))
+    keywords = int(request.args.get("keywords"))
+    success = False
+    message = ""
+
+    dockeys = Dockey.query.filter_by(doc_id=doc_id, keyword_id=keywords, binned=0)
+    if (dockeys.count() == 0):
+        message = f"Keyword {keywords} is not tagged to document {doc_id}."
+        return jsonify(message=message, success=success)
+    
+    for dockey in dockeys:
+        dockey.binned = True
+        db.session.commit()
+        print(f"Keyword {keywords} untag from document {doc_id} successfully")
+
+    success = True
+    return jsonify(success=success, message=message)
 
 # Keytypes
 
@@ -153,24 +234,24 @@ def keytypes_search():
 @login_required
 def keytypes_create():
     keytype_name = request.form.get(Keytype.Const.FIELD_NAME)
-    create_message = ""
+    message = ""
     success = False
 
     if (len(keytype_name) == 0):
-        return jsonify(create_message=create_message, success=success)
+        return jsonify(message=message, success=success)
 
     if (len(Keytype.query.filter_by(name=keytype_name, binned=False).all()) == 0):
         new_keytype = Keytype(name=keytype_name)
         db.session.add(new_keytype)
         db.session.commit()
-        create_message = f"New keytype created: {new_keytype.name}."
+        message = f"New keytype created: {new_keytype.name}."
         success = True
     else:
-        create_message = f"Keytype {keytype_name} already existed."
+        message = f"Keytype {keytype_name} already existed."
         success = False
-    print(create_message)
+    print(message)
 
-    return jsonify(create_message=create_message, success=success)
+    return jsonify(message=message, success=success)
 
 @keytypes.route("/keytypes/detail/<int:id>")
 @login_required

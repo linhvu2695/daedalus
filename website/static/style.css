@@ -343,6 +343,29 @@
   flex: 1;
 }
 
+#detail-popup #tag-pnl {
+  margin-bottom: 10px;
+}
+
+#detail-popup #keywords-metadata {
+  background-color: #dddddd;
+  border-radius: 4px;
+  padding: 4px;
+  display: block;
+  height: 100%;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.keyword-detail-btn {
+  padding: 2px;
+}
+
+.keyword-rmv-btn {
+  padding-left: 2px;
+  padding-right: 8px;
+}
+
 /* Query */
 .query {
   display: flex;

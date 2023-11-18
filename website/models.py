@@ -18,6 +18,7 @@ class Contact(db.Model, BaseModel, UserMixin):
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
     last_name = db.Column(db.String(150))
+    login_id = db.Column(db.String(200))
 
     class Const:
         FIELD_ID = "id"
@@ -25,6 +26,7 @@ class Contact(db.Model, BaseModel, UserMixin):
         FIELD_PASSWORD = "password"
         FIELD_FIRST_NAME = "first_name"
         FIELD_LAST_NAME = "last_name"
+        FIELD_LOGIN_ID = "login_id"
 
     @staticmethod
     def columns() -> list[str]: 

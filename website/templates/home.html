@@ -3,7 +3,12 @@
 
 {%block content%}
 <br/>
-<h1>Welcome {{user.first_name}} {{user.last_name}}!</h1>
+{% if user.first_name and user.last_name%}
+    <h1>Welcome {{user.first_name}} {{user.last_name}}!</h1>
+{% else %}
+    <h1>Welcome {{user.login_id}}!</h1>
+{% endif %}
+
 <br/>
 <form action="/upload" enctype="multipart/form-data" method="POST">
     <input type="file" name="image" accept="image/*" required>

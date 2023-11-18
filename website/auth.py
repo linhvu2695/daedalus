@@ -11,19 +11,6 @@ from . import db, AppConst
 
 auth = Blueprint("auth", __name__)
 
-oauth = OAuth(current_app)
-github = oauth.register(
-    name="github",
-    client_id=current_app.config[AppConst.CONFIG_GITHUB_CLIENT_ID],
-    client_secret=current_app.config[AppConst.CONFIG_GITHUB_CLIENT_SECRET],
-    request_token_params=None,
-    base_url='https://api.github.com/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://github.com/login/oauth/access_token',
-    authorize_url='https://github.com/login/oauth/authorize',
-)
-
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if AppConst.SESSION_USER_INFO_KEY in session:
@@ -122,11 +109,13 @@ def register():
 
 @auth.route("/sso", methods=["POST"])
 def sso_handle():
+    github = _get_github_oauth()
     random_nonce = secrets.token_urlsafe(16)
     return github.authorize_redirect(redirect_uri=url_for("auth.sso_callback", _external=True), nonce=random_nonce)
 
 @auth.route("/callback")
 def sso_callback():
+    github = _get_github_oauth()
     token = github.authorize_access_token()
     print(f"Token: {token}")
     random_nonce = request.args.get("nonce")
@@ -196,3 +185,18 @@ def _get_username_from_email(email: str):
         if match:
             return match.group(1)
     return None
+
+def _get_github_oauth():
+    oauth = OAuth(current_app)
+    github = oauth.register(
+        name="github",
+        client_id=current_app.config[AppConst.CONFIG_GITHUB_CLIENT_ID],
+        client_secret=current_app.config[AppConst.CONFIG_GITHUB_CLIENT_SECRET],
+        request_token_params=None,
+        base_url='https://api.github.com/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url='https://github.com/login/oauth/access_token',
+        authorize_url='https://github.com/login/oauth/authorize',
+    )
+    return github

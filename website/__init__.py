@@ -24,7 +24,6 @@ def create_app():
     # Views management
     from .views import views
     from .auth import auth
-    from .upload import upload
     from .files import files
     from .buffer import buffer
     from .keywords import keywords
@@ -33,7 +32,7 @@ def create_app():
     from .icarus.icarus import icarus
     from .elasticsearch.index import index
 
-    for blueprint in [views, auth, upload, keywords, keytypes, files, buffer, jobs, icarus, index]:
+    for blueprint in [views, auth, keywords, keytypes, files, buffer, jobs, icarus, index]:
         app.register_blueprint(blueprint=blueprint, url_prefix="/")
 
     # Database management

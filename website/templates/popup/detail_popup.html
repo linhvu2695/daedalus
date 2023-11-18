@@ -12,14 +12,17 @@
             <p><strong>ID:</strong> <span id="id-metadata" name="id"></span></p>
             <p><strong>Create Date:</strong> <span id="createdate-metadata" name="createdate"></span></p>
             <p><strong>Doctype:</strong> <span id="doctype-metadata" name="doctype"></span></p>
-            <p><strong>Description:</strong> <br>
-                <textarea id="description-metadata" name="description" style="background-color: #d3d3d3;" readonly></textarea></p>
+
+            <div id="description-pnl">
+                <p><strong>Description:</strong> <button class="btn btn-link" id="auto-caption-btn">Auto-caption</button> <br>
+                    <textarea id="description-metadata" name="description" style="background-color: #d3d3d3; width: 100%;" readonly></textarea></p>
+            </div>
             
             <div id="tag-pnl">
                 <p>
                     <strong>Keywords:</strong> <br>
                     <span id="keywords-metadata" name="keywords"></span>
-                    <select class="dropdown-input keywords-dropdown" id="tag-dropdown"></select> <button class="btn btn-link" id="tag-btn">Tag</button> <br>
+                    <select class="dropdown-input keywords-dropdown" id="tag-dropdown"></select> <button class="btn btn-link" id="tag-btn" data-toggle="tooltip" title="Add tag"><i class="fa fa-plus"></i></button> <br>
                 </p>
             </div>
         </div>
@@ -28,3 +31,5 @@
         <button type="button" class="btn btn-primary" id="edit-btn" onclick="toggleEditMode()">Edit</button>
     </form>
 </div>
+
+<script src="/static/detailPopup.js"></script>

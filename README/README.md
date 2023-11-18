@@ -8,6 +8,7 @@
 - Run: `python main.py`
 
 ![Alt text](files.png)
+![Alt text](detail-popup.png)
 
 ## Setup ElasticSearch
 ```

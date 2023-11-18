@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, jsonify
 from flask_login import login_required, current_user
 from os import path
 
@@ -93,3 +93,22 @@ def captioning_generate():
     print(result_caption)
     return render_template('icarus/captioning/captioning_gen.html', user=current_user, 
                            text_to_render=result_caption)
+
+@icarus.route("/icarus/Captioning/url", methods=["POST"])
+@login_required
+def captioning_generate_from_url():
+    data = request.get_json()
+    image_url = data.get("url", "")
+
+    # Remove buffer prefix
+    buffer_prefix = "/buffer"
+    if (image_url.startswith(buffer_prefix)):
+        image_url = image_url[len(buffer_prefix):]
+    print(f"Url: {image_url}")
+
+    image = Image.open(image_url).convert("RGB")
+
+    result_caption = captioning_compute(image)
+    print(result_caption)
+
+    return jsonify(result=result_caption)

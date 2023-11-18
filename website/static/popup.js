@@ -138,6 +138,12 @@ function populateDocumentDetail(documentId) {
         error: function (message) {console.log("Error:", message);
         }
     });
+
+    // Ensure edit mode is off by default
+    var saveButton = document.getElementById('save-btn');
+    if (!saveButton.hasAttribute('disabled')) {
+        toggleEditMode();
+    }
 }
 
 function populateKeywordPnl(documentId) {
@@ -264,18 +270,18 @@ function closePopupFunction() {
 };
 
 function toggleEditMode() {
-    var descriptionMetadata = document.getElementById('description-metadata');
+    var descMetadata = document.getElementById('description-metadata');
     var saveButton = document.getElementById('save-btn');
 
     if (saveButton.hasAttribute('disabled')) {
         // Enable edit mode
         saveButton.removeAttribute('disabled');
-        descriptionMetadata.removeAttribute('readonly');        
-        descriptionMetadata.style.backgroundColor = '';
+        descMetadata.removeAttribute('readonly');        
+        descMetadata.style.backgroundColor = '';
     } else {
         // Disable edit mode
-        descriptionMetadata.setAttribute('readonly', 'readonly');
+        descMetadata.setAttribute('readonly', 'readonly');
         saveButton.setAttribute('disabled', 'disabled');
-        descriptionMetadata.style.backgroundColor = '#d3d3d3';
+        descMetadata.style.backgroundColor = '#d3d3d3';
     }
 }
